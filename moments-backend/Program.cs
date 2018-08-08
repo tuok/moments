@@ -1,12 +1,22 @@
 ﻿using System;
 
-namespace moments_backend
+namespace Moments
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            if (args.Length < 1)
+            {
+                throw new ArgumentException("No path argument given, cannot load entries.");
+            }
+
+            var sourcePath = args[0];
+
+            Console.WriteLine($"Using '{sourcePath}' as a source path for entries...");
+
+            Moments.Database db = new Moments.Database(sourcePath);
+            db.LoadData();
         }
     }
 }
