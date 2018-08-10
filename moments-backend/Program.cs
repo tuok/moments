@@ -1,22 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Moments
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length < 1)
-            {
-                throw new ArgumentException("No path argument given, cannot load entries.");
-            }
+                throw new ArgumentException("Path to entries root folder has to be given as an argument.");
 
-            var sourcePath = args[0];
+            Console.WriteLine($"Entry root path '{args[0]}' was provided.");
+            args[0] = "entryPath=" + args[0];
 
-            Console.WriteLine($"Using '{sourcePath}' as a source path for entries...");
-
-            Moments.Database db = new Moments.Database(sourcePath);
-            db.LoadData();
+            BuildWebHost(args).Run();
         }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .Build();
     }
 }
