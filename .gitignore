@@ -2,3 +2,4 @@ data
 .vscode
 [Bb]in/
 [Oo]bj/
+yarn.*
