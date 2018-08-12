@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { Fragment } from 'react'
+import { CircularProgress } from '@material-ui/core';
 
 export default class EntryList extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  
   render() {
     return (
-      <p>Hello from EntryList!</p>
+      <Fragment>
+        {this.props.fetchingEntries ? <CircularProgress size={50} /> : null }
+        <p>Hello from EntryList!</p>
+      </Fragment>
     )
   }
 }
