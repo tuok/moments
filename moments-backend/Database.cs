@@ -39,9 +39,12 @@ namespace Moments
                 throw new IOException($"Specified path {path} doesn't exist. Cannot load entries.");
         }
 
-        public string GetEntry(long id)
+        public Entry GetEntry(long id)
         {
-            return JsonConvert.SerializeObject(this.allEntries[id]);
+            if (!this.allEntries.ContainsKey(id))
+                return null;
+
+            return this.allEntries[id];
         }
 
         // Adds new entry in memory, but doesn't save it.

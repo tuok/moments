@@ -14,7 +14,7 @@ namespace Moments.Interfaces
     {
         List<Entry> Entries { get; }
         List<string> Tags { get; }
-        string GetEntry(long id);
+        Entry GetEntry(long id);
         void SaveEntry(Entry entry);
         void LoadData();
     }

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Moments.Interfaces;
 
 using Newtonsoft.Json;
+
+using Moments.Models;
+using Moments.Interfaces;
+
 
 namespace Moments.Controllers
 {
@@ -19,18 +22,44 @@ namespace Moments.Controllers
         }
 
         // GET api/entries
-        [HttpGet]
-        public string Get()
+        public string Get(int? id, int? limit, int? begin, int? end)
         {
-            Console.WriteLine("EntryController: GET api/entry");
-            return JsonConvert.SerializeObject(this.db.Entries);
-        }
+            if (id.HasValue)
+            {
+                Entry e = this.db.GetEntry(id.Value);
 
-        // GET api/entries/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return this.db.GetEntry(id);
+                return e == null ? "{}" : JsonConvert.SerializeObject(e);
+            }
+
+            if (limit.HasValue && limit < this.db.Entries.Count)
+            {
+                return JsonConvert.SerializeObject(
+                    this.db.Entries.GetRange(
+                        this.db.Entries.Count - limit.Value,
+                        limit.Value
+                    )
+                );
+            }
+
+            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < this.db.Entries.Count)
+            {
+                int be = begin.Value;
+                int en = end.Value;
+
+                if (begin.Value < 1)
+                    be = 1;
+
+                if (end.Value >= this.db.Entries.Count)
+                    en = this.db.Entries.Count;
+
+                int range = en - be + 1;
+
+                return JsonConvert.SerializeObject(
+                    this.db.Entries.GetRange(be - 1, range)
+                );
+            }
+
+            return JsonConvert.SerializeObject(this.db.Entries);
         }
 
         // POST api/values
