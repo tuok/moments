@@ -14,8 +14,11 @@ export default class Moments extends React.Component {
     super(props)
 
     this.state = {
+      entryIndexStart: 0,
+      entriesVisible: 50,
       fetchingEntries: false,
       entries: null,
+      visibleEntries: null,
       errorMessage: null,
     }
   }
@@ -24,10 +27,19 @@ export default class Moments extends React.Component {
     this.setState({fetchingEntries: true})
     fetch('http://localhost:5000/api/entries')
       .then(response => response.json())
-      .then(data => this.setState({
-        entries: data,
-        fetchingEntries: false
-      }))
+      .then(data => {
+        let entries = data.reverse()
+        this.setState({
+          // Reverse entries so that newest is at index 0.
+          // This helps entry navigation implementation.
+          entries: entries,
+          visibleEntries: entries.slice(
+            this.state.entryIndexStart,
+            this.state.entryIndexStart + this.state.entriesVisible
+          ),
+          fetchingEntries: false
+      })
+    })
       .catch(err => {
         console.error(err)
         const msg = 'Tapahtumien haussa palvelimelta tapahtui virhe.'
@@ -65,10 +77,11 @@ export default class Moments extends React.Component {
         <Layout />
         <EntryList 
           fetchingEntries={this.state.fetchingEntries}
+          entries={this.state.visibleEntries}
         />
         <EntryDialog />
         <Snackbar
-          open={this.state.errorMessage}
+          open={this.state.errorMessage != null}
           autoHideDuration={6000}
           onClose={this.handleSnackbarClose}
           message={this.state.errorMessage}

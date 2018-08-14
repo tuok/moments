@@ -17,6 +17,10 @@ const styles = {
 
   addButton: {
     marginLeft: 6,
+  },
+
+  appbarStyle: {
+    marginBottom: 15,
   }
 }
 
@@ -25,7 +29,7 @@ export default class Layout extends React.Component {
   render() {
     return (
       <div className="testi">
-        <AppBar position="static">
+        <AppBar position="static" style={styles.appbarStyle}>
           <Toolbar>
             <Typography
               variant="title"
