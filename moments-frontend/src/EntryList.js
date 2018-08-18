@@ -12,8 +12,51 @@ export default class EntryList extends React.Component {
     super(props)
   }
 
-  formatDateFromComponents(components) {
+  formatDateFromComponents(times) {
+    let readable_timestamp = ''
 
+    // Default separator if only month and year have been defined
+    let separator = '/'
+
+
+    // Handle year
+    if (times[0]) {
+      readable_timestamp = times[0].toString()
+    }
+
+    // Handle month
+    if (times[1]) {
+      // Check if day is defined so that we can display "month/year" or "day.month.year"
+      if (times[2]) {
+        // Day is defined
+        separator = '.'
+      }
+
+      // 2018 -> 03/2018 or 03.2018
+      readable_timestamp =
+        times[1].toString().padStart(2, '0') +
+        separator +
+        readable_timestamp
+    }
+
+    // If day of month is defined
+    if (times[2]) {
+      // 03.2018 -> 23.03.2018
+      readable_timestamp =
+        times[2].toString().padStart(2, '0') +
+        separator +
+        readable_timestamp
+
+      // If hour is defined
+      if (times[3]) {
+        // 23.03.2018 -> 23.03.2018 06:
+        readable_timestamp += ` ${times[3].toString().padStart(2, '0')}:`
+        // 23.03.2018 06: -> 23.03.2018 06:xx or 23.03.2018 06:41
+        readable_timestamp += times[4] ? times[4].toString().padStart(2, '0') : 'xx'
+      }
+    }
+
+    return readable_timestamp
   }
 
   singleEntry(entry) {
@@ -21,10 +64,10 @@ export default class EntryList extends React.Component {
       <Card key={entry.id} style={entryCardStyle}>
         <CardContent>
           <Typography variant="title" className="card-title">
-            #{entry.id}
+            {this.formatDateFromComponents(entry.time_components)}
           </Typography>
           <Typography style={{display: 'inline-block'}} variant="caption" className="card-text">
-            #{entry.text}
+            {entry.text}
           </Typography>
         </CardContent>
       </Card>
