@@ -79,6 +79,7 @@ namespace Moments
         private void refreshEntriesAndTags()
         {
             Entries = allEntries.Values.ToList();
+            Entries.Sort((e1, e2) => e1.CompareTo(e2));
             Tags = allTags.Values.ToList();
         }
 

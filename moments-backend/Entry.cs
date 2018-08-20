@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Moments.Models
 {
-    public class Entry
+    public class Entry : IComparable
     {
         [JsonProperty("id")]
         public long Id { get; }
@@ -46,6 +46,46 @@ namespace Moments.Models
             Tags = tags;
             TimeComponents = timeComponents;
             LinksTo = linksTo == null ? new List<long>() : linksTo;
+        }
+
+        public int CompareTo(object e)
+        {
+            return this.compareTimeComponents((Entry)e, 0);
+        }
+
+        private int compareTimeComponents(Entry e, int i)
+        {
+            if (i > 4)
+            {
+                if (Id < e.Id)
+                    return -1;
+
+                else if (Id > e.Id)
+                    return 1;
+
+                else
+                    return 0;
+            }
+
+            if (TimeComponents[i].HasValue && !e.TimeComponents[i].HasValue)
+                return 1;
+
+            else if (!TimeComponents[i].HasValue && e.TimeComponents[i].HasValue)
+                return -1;
+
+            else if (!TimeComponents[i].HasValue && !e.TimeComponents[i].HasValue)
+                return 0;
+
+            else if (TimeComponents[i] < e.TimeComponents[i])
+                return -1;
+
+            else if (TimeComponents[i] > e.TimeComponents[i])
+                return 1;
+
+            else
+            {
+                return compareTimeComponents(e, i + 1);
+            }
         }
     }
 }
