@@ -29,6 +29,9 @@ export default class Moments extends React.Component {
       .then(response => response.json())
       .then(data => {
         let entries = data.reverse()
+
+        // TODO: Add time formatting here
+
         this.setState({
           // Reverse entries so that newest is at index 0.
           // This helps entry navigation implementation.

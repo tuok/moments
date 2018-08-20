@@ -7,6 +7,14 @@ const entryCardStyle = {
   marginRight: 5,
 }
 
+const entryCardTitleStyle = {
+  marginBottom: 10,
+}
+
+const entryCardTextStyle = {
+  whiteSpace: 'pre-line',
+}
+
 export default class EntryList extends React.Component {
   constructor(props) {
     super(props)
@@ -63,11 +71,11 @@ export default class EntryList extends React.Component {
     return (
       <Card key={entry.id} style={entryCardStyle}>
         <CardContent>
-          <Typography variant="title" className="card-title">
+          <Typography variant="title" style={entryCardTitleStyle}>
             {this.formatDateFromComponents(entry.time_components)}
           </Typography>
-          <Typography style={{display: 'inline-block'}} variant="caption" className="card-text">
-            {entry.text}
+          <Typography style={entryCardTextStyle} component="p">
+              {entry.text}
           </Typography>
         </CardContent>
       </Card>
