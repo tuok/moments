@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 import { CircularProgress } from '@material-ui/core';
 
 import Entry from './Entry'
+import SearchBar from './SearchBar'
 
 export default class EntryList extends React.Component {
   constructor(props) {
@@ -25,6 +26,7 @@ export default class EntryList extends React.Component {
 
     return (
       <Fragment>
+        <SearchBar />
         {progressIndicator}
         {entryCards}
       </Fragment>
