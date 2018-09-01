@@ -12,7 +12,7 @@ using Moments.Interfaces;
 
 namespace Moments.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/entries")]
     public class EntriesController : Controller
     {
         private IDatabase db;
