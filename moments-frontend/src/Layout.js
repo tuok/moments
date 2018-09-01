@@ -36,7 +36,7 @@ export default class Layout extends React.Component {
               color="inherit"
               style={styles.flex}
             >
-              Moments life logger &lt;3
+              Moments &lt;3
             </Typography>
             <Button variant="contained" color="secondary">
               Uusi kirjaus
