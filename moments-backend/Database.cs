@@ -118,10 +118,6 @@ namespace Moments
         private void parseEntries(List<string> entryFiles)
         {
             Dictionary<string, Exception> ignoredFiles = new Dictionary<string, Exception>();
-            List<Entry> entries = new List<Entry>();
-            List<string> tags = new List<string>();
-            List<long> linksTo = new List<long>();
-            List<int?> timeComponents = new List<int?>{ null, null, null, null, null };
             int entriesLoadedCount = 0;
 
             List<string> errors = new List<string>();
@@ -140,48 +136,12 @@ namespace Moments
 
                     Entry entry = JsonConvert.DeserializeObject<Entry>(rawJson, jss);
 
-                    // Old manual entry parsing code. Remove when confirmed that it is not needed anymore.
-                    /*
-                    dynamic dynamicEntry = JObject.Parse(rawJson);
-
-                    long id = dynamicEntry.id;
-                    string author = dynamicEntry.author;
-                    string title = dynamicEntry.title;
-                    string text = dynamicEntry.text;
-                    bool privateEntry = dynamicEntry["private"];
-
-                    foreach (var tag in dynamicEntry.tags)
-                        tags.Add(tag.Value);
-
-                    foreach (var link in dynamicEntry.links_to)
-                        linksTo.Add(link.Value);
-
-                    for (int i = 0; i < 5; i++)
-                    {
-                        string component = dynamicEntry.time_components[i];
-
-                        if (component.Length > 0)
-                            timeComponents[i] = Int32.Parse(component);
-                        else
-                            timeComponents[i] = 0;
-                    }
-
-                    Entry e = new Entry(
-                        id,
-                        author,
-                        title,
-                        text,
-                        privateEntry,
-                        tags,
-                        timeComponents
-                    );
-                    */
                     // Keep maximum ID number up to date
                     if (entry.Id > MaxId)
                         MaxId = entry.Id;
 
                     // Keep list of all tags updated
-                    foreach (string tag in tags)
+                    foreach (string tag in entry.Tags)
                     {
                         if (!allTags.ContainsKey(tag))
                             allTags.Add(tag, tag);
