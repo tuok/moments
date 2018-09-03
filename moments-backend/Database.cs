@@ -81,6 +81,7 @@ namespace Moments
             Entries = allEntries.Values.ToList();
             Entries.Sort((e1, e2) => e1.CompareTo(e2));
             Tags = allTags.Values.ToList();
+            Tags.Sort();
         }
 
         private (List<string> entryFiles, List<string> ignoredFiles) GetEntryFiles()
