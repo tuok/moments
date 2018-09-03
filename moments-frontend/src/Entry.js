@@ -19,12 +19,12 @@ const entryCardTextStyle = {
 
 const tagStyle = {
   marginRight: 5,
-  marginBottom: 5,
+  marginTop: 5,
 }
 
 const tagTitleStyle = {
   fontWeight: "bold",
-  marginBottom: 5,
+  marginBottom: 0,
 }
 
 
