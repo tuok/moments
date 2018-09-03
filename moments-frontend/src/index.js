@@ -17,14 +17,20 @@ export default class Moments extends React.Component {
       entryIndexStart: 0,
       entriesVisible: 50,
       fetchingEntries: false,
-      entries: null,
+      fetchingTags: false,
+      allTags: [],
+      allEntries: [],
       visibleEntries: null,
       errorMessage: null,
     }
   }
 
   componentDidMount() {
-    this.setState({fetchingEntries: true})
+    this.setState({
+      fetchingEntries: true,
+      fetchingTags: true
+    })
+
     fetch('http://localhost:5000/api/entries')
       .then(response => response.json())
       .then(data => {
@@ -35,14 +41,14 @@ export default class Moments extends React.Component {
         this.setState({
           // Reverse entries so that newest is at index 0.
           // This helps entry navigation implementation.
-          entries: entries,
+          allEntries: entries,
           visibleEntries: entries.slice(
             this.state.entryIndexStart,
             this.state.entryIndexStart + this.state.entriesVisible
           ),
           fetchingEntries: false
+        })
       })
-    })
       .catch(err => {
         console.error(err)
         const msg = 'Tapahtumien haussa palvelimelta tapahtui virhe.'
@@ -51,11 +57,29 @@ export default class Moments extends React.Component {
           fetchingEntries: false
         })
       })
+
+    fetch('http://localhost:5000/api/tags')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          allTags: data,
+          fetchingTags: false
+        })
+      })
+      .catch(err => {
+        console.error(err)
+        const msg = 'Tägien haussa palvelimelta tapahtui virhe.'
+        this.setState({
+          errorMessage: msg,
+          fetchingTags: false
+        })
+      })
+
   }
 
   handleError(err) {
     this.setState({
-      fetchingEntries: false,
+      fetchingData: false,
       errorMessage: err,
     })
 }
