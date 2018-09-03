@@ -23,7 +23,7 @@ export default class EntryList extends React.Component {
 
     return (
       <Fragment>
-        <SearchBar />
+        <SearchBar tags={this.props.tags} />
         {progressIndicator}
         {entryCards}
       </Fragment>

@@ -102,8 +102,9 @@ export default class Moments extends React.Component {
     return (
       <Fragment>
         <Layout />
-        <EntryList 
-          fetchingEntries={this.state.fetchingEntries}
+        <EntryList
+          tags={this.state.allTags}
+          fetchingData={this.state.fetchingData}
           entries={this.state.visibleEntries}
         />
         <EntryDialog />
