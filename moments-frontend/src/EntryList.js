@@ -10,9 +10,6 @@ export default class EntryList extends React.Component {
   }
 
   render() {
-    console.info("EntryList props: ")
-    console.info(this.props)
-
     let progressIndicator = null
     let entryCards = null
 
