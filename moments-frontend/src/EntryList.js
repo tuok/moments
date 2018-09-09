@@ -7,6 +7,16 @@ import SearchBar from './SearchBar'
 export default class EntryList extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      searchTags: []
+    }
+
+    this.onSearchChange = this.onSearchChange.bind(this)
+  }
+
+  onSearchChange(tags) {
+    this.setState({searchTags: tags})
   }
 
   render() {
@@ -18,12 +28,21 @@ export default class EntryList extends React.Component {
     }
 
     if (this.props.entries != null) {
-      entryCards = this.props.entries.map((e) => <Entry key={e.id} entry={e} />)
+      let entries = this.props.entries;
+
+      // If tags have been entered into search bar, filter cards based on search tags
+      if (this.state.searchTags.length > 0) {
+        entries = this.props.entries.filter((e) => {
+          return this.state.searchTags.every((tag) => e.tags.includes(tag))
+        })
+      }
+
+      entryCards = entries.map((e) => <Entry key={e.id} entry={e} />)
     }
 
     return (
       <Fragment>
-        <SearchBar tags={this.props.tags} />
+        <SearchBar tags={this.props.tags} onSearchChange={this.onSearchChange} />
         {progressIndicator}
         {entryCards}
       </Fragment>

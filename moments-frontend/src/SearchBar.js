@@ -16,11 +16,6 @@ export default class SearchBar extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      searchTags: [],
-      allTagOptions: [],
-    }
-
     this.onSelectChange = this.onSelectChange.bind(this)
   }
 
@@ -30,20 +25,27 @@ export default class SearchBar extends React.Component {
       tags.push(element.value)
     });
 
-    this.setState({searchTags: tags})
+    this.props.onSearchChange(tags)
   }
 
   render() {
-    let tagOptions = this.props.tags.map(t => {
+    const tagOptions = this.props.tags.map(t => {
       return { value: t, label: t }
     })
 
-    console.log("render")
+    const tagFilterOptions = createFilterOptions({tagOptions})
 
     return (
       <div style={searchBarStyles}>
         <Typography variant="subheading">Hae kirjauksia tägien perusteella:</Typography>
-        <Select isMulti={true} options={tagOptions} styles={selectStyle} onChange={this.onSelectChange} />
+        <Select
+          isMulti={true}
+          options={tagOptions}
+          styles={selectStyle}
+          onChange={this.onSelectChange}
+          placeholder="Hae tägejä..."
+          openOnClick={true}
+        />
       </div>
     )
   }
