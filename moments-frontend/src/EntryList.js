@@ -27,12 +27,12 @@ export default class EntryList extends React.Component {
       progressIndicator = <CircularProgress size={50} />
     }
 
-    if (this.props.entries != null) {
-      let entries = this.props.entries;
+    if (this.props.allEntries != null && this.props.visibleEntries != null) {
+      let entries = this.props.visibleEntries;
 
       // If tags have been entered into search bar, filter cards based on search tags
       if (this.state.searchTags.length > 0) {
-        entries = this.props.entries.filter((e) => {
+        entries = this.props.allEntries.filter((e) => {
           return this.state.searchTags.every((tag) => e.tags.includes(tag))
         })
       }

@@ -1,4 +1,7 @@
-// TODO: Optimoi react-select, on nyt aika hidas
+/*
+TODO:
+- Optimoi react-select, on nyt aika hidas isolla määrällä tägejä.
+*/
 
 import 'typeface-roboto'
 
@@ -107,7 +110,8 @@ export default class Moments extends React.Component {
         <EntryList
           tags={this.state.allTags}
           fetchingData={this.state.fetchingData}
-          entries={this.state.visibleEntries}
+          allEntries={this.state.allEntries}
+          visibleEntries={this.state.visibleEntries}
         />
         <EntryDialog />
         <Snackbar
