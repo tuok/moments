@@ -1,3 +1,5 @@
+// TODO: Optimoi react-select, on nyt aika hidas
+
 import 'typeface-roboto'
 
 import React, { Fragment } from 'react'
