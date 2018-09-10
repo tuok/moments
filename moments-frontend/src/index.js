@@ -11,8 +11,7 @@ import ReactDOM from 'react-dom'
 import Layout from './Layout'
 import EntryDialog from './EntryDialog'
 import EntryList from './EntryList'
-import { Snackbar, Button, IconButton } from '@material-ui/core';
-import { CloseIcon } from '@material-ui/icons/Close'
+import { Snackbar, Button } from '@material-ui/core';
 
 export default class Moments extends React.Component {
   constructor(props) {
