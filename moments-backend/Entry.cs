@@ -23,6 +23,8 @@ namespace Moments.Models
         public string Text { get; set; }
         [JsonProperty("private")]
         public bool Private { get; set; }
+        [JsonProperty("timestamp")]
+        public DateTime Timestamp { get; set; }
 
         [JsonIgnore]
         public string Path { get; set; }
@@ -46,46 +48,25 @@ namespace Moments.Models
             Tags = tags;
             TimeComponents = timeComponents;
             LinksTo = linksTo == null ? new List<long>() : linksTo;
+
+            CreateTimestamp();
+        }
+
+        public void CreateTimestamp()
+        {
+            int year = TimeComponents[0] ?? 9999;
+            int month = TimeComponents[1] ?? 1;
+            int day = TimeComponents[2] ?? 1;
+            int hour = TimeComponents[3] ?? 0;
+            int minute = TimeComponents[4] ?? 0;
+            int second = 0;
+
+            Timestamp = new DateTime(year, month, day, hour, minute, second);
         }
 
         public int CompareTo(object e)
         {
-            return this.compareTimeComponents((Entry)e, 0);
-        }
-
-        private int compareTimeComponents(Entry e, int i)
-        {
-            if (i > 4)
-            {
-                if (Id < e.Id)
-                    return -1;
-
-                else if (Id > e.Id)
-                    return 1;
-
-                else
-                    return 0;
-            }
-
-            if (TimeComponents[i].HasValue && !e.TimeComponents[i].HasValue)
-                return 1;
-
-            else if (!TimeComponents[i].HasValue && e.TimeComponents[i].HasValue)
-                return -1;
-
-            else if (!TimeComponents[i].HasValue && !e.TimeComponents[i].HasValue)
-                return 0;
-
-            else if (TimeComponents[i] < e.TimeComponents[i])
-                return -1;
-
-            else if (TimeComponents[i] > e.TimeComponents[i])
-                return 1;
-
-            else
-            {
-                return compareTimeComponents(e, i + 1);
-            }
+            return Timestamp.CompareTo(((Entry)e).Timestamp);
         }
     }
 }

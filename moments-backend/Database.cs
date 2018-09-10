@@ -135,6 +135,7 @@ namespace Moments
                     };
 
                     Entry entry = JsonConvert.DeserializeObject<Entry>(rawJson, jss);
+                    entry.CreateTimestamp();
 
                     // Keep maximum ID number up to date
                     if (entry.Id > MaxId)
