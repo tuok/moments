@@ -9,14 +9,20 @@ export default class EntryList extends React.Component {
     super(props)
 
     this.state = {
-      searchTags: []
+      searchTags: [],
+      searchStartDate: null,
+      searchEndDate: null
     }
 
     this.onSearchChange = this.onSearchChange.bind(this)
   }
 
-  onSearchChange(tags) {
-    this.setState({searchTags: tags})
+  onSearchChange(tags, startDate, endDate) {
+    this.setState({
+      searchTags: tags,
+      searchStartDate: startDate,
+      searchEndDate: endDate
+    })
   }
 
   render() {
@@ -42,7 +48,12 @@ export default class EntryList extends React.Component {
 
     return (
       <Fragment>
-        <SearchBar tags={this.props.tags} onSearchChange={this.onSearchChange} />
+        <SearchBar
+          tags={this.props.tags}
+          onSearchChange={this.onSearchChange}
+          searchStartDate={this.state.searchStartDate}
+          searchEndDate={this.state.searchEndDate}
+        />
         {progressIndicator}
         {entryCards}
       </Fragment>
