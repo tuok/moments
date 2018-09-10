@@ -4,6 +4,7 @@ TODO:
 */
 
 import 'typeface-roboto'
+import './global.css'
 
 import React, { Fragment } from 'react'
 import ReactDOM from 'react-dom'
