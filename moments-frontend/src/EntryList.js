@@ -15,12 +15,14 @@ export default class EntryList extends React.Component {
       searchTags: [],
       searchStartDate: null,
       searchEndDate: null,
+      sortAscending: false,
     }
 
-    this.onSearchChange = this.onSearchChange.bind(this)
+    this.handleSearchChange = this.handleSearchChange.bind(this)
+    this.handleSortChange = this.handleSortChange.bind(this)
   }
 
-  onSearchChange(tags, startDate, endDate) {
+  handleSearchChange(tags, startDate, endDate) {
     this.setState({
       searchTags: tags,
       searchStartDate: startDate,
@@ -28,21 +30,27 @@ export default class EntryList extends React.Component {
     })
   }
 
+  handleSortChange(event) {
+    this.setState({sortAscending: event.target.checked})
+  }
+
   render() {
     let progressIndicator = null
     let entryCards = null
+    let entries = this.props.allEntries.slice()
 
     if (this.props.fetchingEntries) {
       progressIndicator = <CircularProgress size={50} />
     }
 
-    if (this.props.allEntries != null && this.props.visibleEntries != null) {
-      let entries = this.props.visibleEntries;
+    if (this.props.allEntries != null) {
+      if (this.state.sortAscending) {
+        entries = entries.reverse()
+      }
 
       // If tags have been entered into search bar, or if search dates
       // have been specified, filter cards based on search tags.
       if (this.state.searchTags.length > 0 || this.state.searchStartDate != null || this.state.searchEndDate != null) {
-        entries = this.props.allEntries
         let startDate = this.state.searchStartDate
         let endDate = this.state.searchEndDate
 
@@ -63,6 +71,8 @@ export default class EntryList extends React.Component {
         }
       }
 
+      // Paginate results
+      entries = entries.slice(this.state.entryIndexStart, this.state.entryIndexStart + this.state.entriesVisible)
       entryCards = entries.map((e) => <Entry key={e.id} entry={e} />)
     }
 
@@ -70,9 +80,10 @@ export default class EntryList extends React.Component {
       <Fragment>
         <SearchBar
           tags={this.props.tags}
-          onSearchChange={this.onSearchChange}
+          handleSearchChange={this.handleSearchChange}
           searchStartDate={this.state.searchStartDate}
           searchEndDate={this.state.searchEndDate}
+          handleSortChange={this.handleSortChange}
         />
         {progressIndicator}
         {entryCards}

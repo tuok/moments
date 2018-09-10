@@ -18,6 +18,10 @@ const datePickerStyles = {
   display: "flex"
 }
 
+const sortStyle = {
+  marginLeft: -3,
+}
+
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props)
@@ -28,38 +32,32 @@ export default class SearchBar extends React.Component {
       endDate: null
     }
 
-    this.onSelectChange = this.onSelectChange.bind(this)
-    this.onStartDateChange = this.onStartDateChange.bind(this)
-    this.onEndDateChange = this.onEndDateChange.bind(this)
+    this.handleSelectChange = this.handleSelectChange.bind(this)
+    this.handleStartDateChange = this.handleStartDateChange.bind(this)
+    this.handleEndDateChange = this.handleEndDateChange.bind(this)
   }
 
-  onSelectChange(selectedTags) {
-    console.log("onSelectChange")
+  handleSelectChange(selectedTags) {
     let tags = []
     selectedTags.forEach(element => {
       tags.push(element.value)
     });
 
     this.setState({searchTags: tags})
-    this.props.onSearchChange(tags, this.state.startDate, this.state.endDate)
+    this.props.handleSearchChange(tags, this.state.startDate, this.state.endDate)
   }
   
-  onStartDateChange(date) {
-    console.log("onStartDateChange")
-    //console.log("Start date: " + date.toString())
+  handleStartDateChange(date) {
     this.setState({startDate: date})
-    this.props.onSearchChange(this.state.searchTags, date, this.state.endDate)
+    this.props.handleSearchChange(this.state.searchTags, date, this.state.endDate)
   }
 
-  onEndDateChange(date) {
-    console.log("onEndDateChange")
-    //console.log("End date: " + date.toString())
+  handleEndDateChange(date) {
     this.setState({endDate: date})
-    this.props.onSearchChange(this.state.searchTags, this.state.startDate, date)
+    this.props.handleSearchChange(this.state.searchTags, this.state.startDate, date)
   }
 
   render() {
-    console.log("Searchbar Render")
     return (
       <div style={searchBarStyles}>
         <Typography variant="subheading">Hae kirjauksista</Typography>
@@ -67,7 +65,7 @@ export default class SearchBar extends React.Component {
           isMulti={true}
           options={this.props.tags}
           styles={selectStyle}
-          onChange={this.onSelectChange}
+          onChange={this.handleSelectChange}
           placeholder="Hae kirjauksia tägien perusteella"
           openOnClick={true}
         />
@@ -77,7 +75,7 @@ export default class SearchBar extends React.Component {
               value={this.state.startDate}
               dateFormat="DD.MM.YYYY" 
               isClearable={true}
-              onChange={this.onStartDateChange}
+              onChange={this.handleStartDateChange}
               placeholderText="Alkaen pvm"
               showWeekNumbers
               showYearDropdown
@@ -88,13 +86,22 @@ export default class SearchBar extends React.Component {
               value={this.state.endDate}
               dateFormat="DD.MM.YYYY" 
               isClearable={true}
-              onChange={this.onEndDateChange}
+              onChange={this.handleEndDateChange}
               placeholderText="Päättyen pvm"
               showWeekNumbers
               showYearDropdown
             />
           </div>
         </div>
+        <label style={sortStyle}>
+          <input
+            type="checkbox"
+            defaultChecked={false}
+            value={this.props.sortAscending}
+            onChange={this.props.handleSortChange}
+          />
+          Järjestä vanhimmasta uusimpaan
+        </label>
       </div>
     )
   }
