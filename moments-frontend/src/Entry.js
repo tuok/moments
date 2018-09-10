@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardContent, Chip, Divider, Typography } from '@material-ui/core';
+import { Card, CardContent, Chip, Typography } from '@material-ui/core';
 
 
 const entryCardStyle = {
@@ -29,10 +29,6 @@ const tagTitleStyle = {
 
 
 export default class Entry extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
   formatDateFromComponents(times) {
     let readable_timestamp = ''
 

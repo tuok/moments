@@ -95,7 +95,7 @@ export default class Moments extends React.Component {
       fetchingData: false,
       errorMessage: err,
     })
-}
+  }
 
   handleSnackbarClick = () => {
     this.setState({ errorMessage: null });
@@ -111,7 +111,6 @@ export default class Moments extends React.Component {
 
 
   render() {
-    console.log(this.state)
     return (
       <Fragment>
         <Layout />
