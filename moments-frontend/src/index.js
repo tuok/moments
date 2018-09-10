@@ -19,13 +19,10 @@ export default class Moments extends React.Component {
     super(props)
 
     this.state = {
-      entryIndexStart: 0,
-      entriesVisible: 50,
       fetchingEntries: false,
       fetchingTags: false,
       allTags: [],
       allEntries: [],
-      visibleEntries: null,
       errorMessage: null,
     }
   }
@@ -51,10 +48,6 @@ export default class Moments extends React.Component {
           // Reverse entries so that newest is at index 0.
           // This helps entry navigation implementation.
           allEntries: entries,
-          visibleEntries: entries.slice(
-            this.state.entryIndexStart,
-            this.state.entryIndexStart + this.state.entriesVisible
-          ),
           fetchingEntries: false
         })
       })

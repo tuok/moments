@@ -9,9 +9,12 @@ export default class EntryList extends React.Component {
     super(props)
 
     this.state = {
+      entryIndexStart: 0,
+      entriesVisible: 50,
+
       searchTags: [],
       searchStartDate: null,
-      searchEndDate: null
+      searchEndDate: null,
     }
 
     this.onSearchChange = this.onSearchChange.bind(this)
