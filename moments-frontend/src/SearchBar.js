@@ -28,12 +28,6 @@ export default class SearchBar extends React.Component {
     this.props.onSearchChange(tags)
   }
 
-  render() {
-    const tagOptions = this.props.tags.map(t => {
-      return { value: t, label: t }
-    })
-
-    const tagFilterOptions = createFilterOptions({tagOptions})
 
     return (
       <div style={searchBarStyles}>

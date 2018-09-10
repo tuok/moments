@@ -65,8 +65,13 @@ export default class Moments extends React.Component {
     fetch('http://localhost:5000/api/tags')
       .then(response => response.json())
       .then(data => {
+        const tagOptions = data.map(t => {
+          return { value: t, label: t }
+        })
+
         this.setState({
           allTags: data,
+          allTagOptions: tagOptions,
           fetchingTags: false
         })
       })
@@ -107,7 +112,7 @@ export default class Moments extends React.Component {
       <Fragment>
         <Layout />
         <EntryList
-          tags={this.state.allTags}
+          tags={this.state.allTagOptions}
           fetchingData={this.state.fetchingData}
           allEntries={this.state.allEntries}
           visibleEntries={this.state.visibleEntries}
