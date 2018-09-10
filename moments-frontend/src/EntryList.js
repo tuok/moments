@@ -36,11 +36,28 @@ export default class EntryList extends React.Component {
     if (this.props.allEntries != null && this.props.visibleEntries != null) {
       let entries = this.props.visibleEntries;
 
-      // If tags have been entered into search bar, filter cards based on search tags
-      if (this.state.searchTags.length > 0) {
-        entries = this.props.allEntries.filter((e) => {
-          return this.state.searchTags.every((tag) => e.tags.includes(tag))
-        })
+      // If tags have been entered into search bar, or if search dates
+      // have been specified, filter cards based on search tags.
+      if (this.state.searchTags.length > 0 || this.state.searchStartDate != null || this.state.searchEndDate != null) {
+        entries = this.props.allEntries
+        let startDate = this.state.searchStartDate
+        let endDate = this.state.searchEndDate
+
+        if (startDate != null) {
+          entries = entries.filter((e) => {
+            return e.timestamp >= startDate
+          })
+        }
+        if (endDate != null) {
+          entries = entries.filter((e) => {
+            return e.timestamp <= endDate
+          })
+        }
+        if (this.state.searchTags.length > 0) {
+          entries = entries.filter((e) => {
+            return this.state.searchTags.every((tag) => e.tags.includes(tag))
+          })
+        }
       }
 
       entryCards = entries.map((e) => <Entry key={e.id} entry={e} />)
