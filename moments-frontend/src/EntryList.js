@@ -34,14 +34,8 @@ export default class EntryList extends React.Component {
     this.setState({sortAscending: event.target.checked})
   }
 
-  render() {
-    let progressIndicator = null
-    let entryCards = null
+  getFilteredEntries() {
     let entries = this.props.allEntries.slice()
-
-    if (this.props.fetchingEntries) {
-      progressIndicator = <CircularProgress size={50} />
-    }
 
     if (this.props.allEntries != null) {
       if (this.state.sortAscending) {
@@ -71,10 +65,20 @@ export default class EntryList extends React.Component {
         }
       }
 
-      // Paginate results
-      entries = entries.slice(this.state.entryIndexStart, this.state.entryIndexStart + this.state.entriesVisible)
-      entryCards = entries.map((e) => <Entry key={e.id} entry={e} />)
+      // Paginate ans return results
+      return entries.slice(this.state.entryIndexStart, this.state.entryIndexStart + this.state.entriesVisible)
     }
+  }
+
+  render() {
+    let progressIndicator = null
+
+    if (this.props.fetchingEntries) {
+      progressIndicator = <CircularProgress size={50} />
+    }
+
+    let entries = this.getFilteredEntries()
+    let entryCards = entries.map((e) => <Entry key={e.id} entry={e} />)
 
     return (
       <Fragment>
