@@ -24,7 +24,11 @@ export default class Moments extends React.Component {
       allTags: [],
       allEntries: [],
       errorMessage: null,
+      entryDialogVisible: false,
+      entryDialogEntry: null,
     }
+
+    this.handleEntryDialogVisibility = this.handleEntryDialogVisibility.bind(this)
   }
 
   componentDidMount() {
@@ -91,6 +95,13 @@ export default class Moments extends React.Component {
     })
   }
 
+  handleEntryDialogVisibility(visible, entry) {
+    this.setState({
+      entryDialogVisible: visible,
+      entryDialogEntry: entry
+    })
+  }
+
   handleSnackbarClick = () => {
     this.setState({ errorMessage: null });
   };
@@ -107,14 +118,20 @@ export default class Moments extends React.Component {
   render() {
     return (
       <Fragment>
-        <Layout />
+        <Layout
+          handleNewEntryClick={this.handleEntryDialogVisibility}
+        />
         <EntryList
           tags={this.state.allTagOptions}
           fetchingData={this.state.fetchingData}
           allEntries={this.state.allEntries}
           visibleEntries={this.state.visibleEntries}
         />
-        <EntryDialog />
+        <EntryDialog 
+          opened={this.state.entryDialogVisible}
+          handleClose={this.handleEntryDialogVisibility}
+          entry={this.state.entryDialogEntry}
+        />
         <Snackbar
           open={this.state.errorMessage != null}
           autoHideDuration={6000}

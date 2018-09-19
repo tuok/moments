@@ -38,7 +38,11 @@ export default class Layout extends React.Component {
             >
               Moments &lt;3
             </Typography>
-            <Button variant="contained" color="secondary">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={e => this.props.handleNewEntryClick(true, null)}
+            >
               Uusi kirjaus
               <AddIcon style={styles.addButton} />
             </Button>
