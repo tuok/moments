@@ -16,6 +16,10 @@ export default class EntryDialog extends React.Component {
     }
   }
 
+  handleEntryChange(name, val) {
+    console.log(name + " changed to: " + val)
+  }
+
   render() {
     return (
       <Dialog
@@ -31,10 +35,21 @@ export default class EntryDialog extends React.Component {
           </DialogContentText>
           <TextField
             autoFocus
-            margin="dense"
+            fullWidth
+            margin="normal"
+            id="title"
+            label="Kirjauksen otsikko"
+            onChange={e => this.handleEntryChange('title', e.target.value)}
+          />
+          <TextField
+            required
+            fullWidth
+            multiline
+            rowsMax="6"
+            margin="normal"
             id="text"
             label="Kirjauksen teksti"
-            fullWidth
+            onChange={e => this.handleEntryChange('text', e.target.value)}
           />
         </DialogContent>
         <DialogActions>
