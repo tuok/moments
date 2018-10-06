@@ -5,7 +5,16 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button } from '@material-ui/core'
+
+import CreatableSelect from 'react-select'
+
+import AutoComplete from './AutoComplete'
+
+const selectStyle = {
+  control: styles => ({...styles, fontFamily: 'Roboto'}),
+  option: styles => ({...styles, fontFamily: 'Roboto'})
+}
 
 export default class EntryDialog extends React.Component {
   constructor(props) {
@@ -45,12 +54,45 @@ export default class EntryDialog extends React.Component {
             required
             fullWidth
             multiline
-            rowsMax="6"
+            rowsMax="20"
             margin="normal"
             id="text"
             label="Kirjauksen teksti"
             onChange={e => this.handleEntryChange('text', e.target.value)}
           />
+          <div style={{marginTop: 25}}>
+            <CreatableSelect
+              isClearable
+              isMulti={true}
+              options={this.props.tags}
+              styles={selectStyle}
+              onChange={this.handleSelectChange}
+              placeholder="Tägit"
+              openOnClick={true}
+            />
+          </div>
+          <TextField
+            required
+            fullWidth
+            margin="normal"
+            id="start_timestamp"
+            label="Alkuajankohta"
+            onChange={e => this.handleEntryChange('start_timestamp', e.target.value)}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            id="end_timestamp"
+            label="Loppuajankohta"
+            onChange={e => this.handleEntryChange('end_timestamp', e.target.value)}
+          />
+          <AutoComplete
+            label="Tägit"
+            options={this.props.tags}
+            threshold={2}
+            maxResults={5}
+          />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={e => this.props.handleClose(false, null)}>

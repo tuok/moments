@@ -3,6 +3,7 @@ import React from 'react'
 import Select from 'react-select'
 import { Typography } from '@material-ui/core';
 import DatePicker from 'react-date-picker'
+import AutoComplete from './AutoComplete';
 
 const selectStyle = {
   control: styles => ({...styles, fontFamily: 'Roboto'}),
@@ -61,6 +62,13 @@ export default class SearchBar extends React.Component {
     return (
       <div style={searchBarStyles}>
         <Typography variant="subheading">Hae kirjauksista</Typography>
+        <AutoComplete
+            label="Tägit"
+            options={this.props.tags}
+            threshold={2}
+            maxResults={8}
+        />
+        {/*
         <Select
           isMulti={true}
           options={this.props.tags}
@@ -69,6 +77,7 @@ export default class SearchBar extends React.Component {
           placeholder="Hae kirjauksia tägien perusteella"
           openOnClick={true}
         />
+        */}
         <div style={datePickerStyles}>
           <div>
             <DatePicker

@@ -122,12 +122,13 @@ export default class Moments extends React.Component {
           handleNewEntryClick={this.handleEntryDialogVisibility}
         />
         <EntryList
-          tags={this.state.allTagOptions}
+          tags={this.state.allTags}
           fetchingData={this.state.fetchingData}
           allEntries={this.state.allEntries}
           visibleEntries={this.state.visibleEntries}
         />
-        <EntryDialog 
+        <EntryDialog
+          tags={this.state.allTags}
           opened={this.state.entryDialogVisible}
           handleClose={this.handleEntryDialogVisibility}
           entry={this.state.entryDialogEntry}
