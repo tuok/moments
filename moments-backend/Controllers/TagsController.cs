@@ -22,9 +22,35 @@ namespace Moments.Controllers
         }
 
         // GET api/tags
-        public string Get()
+        public string Get(string s, int? limit)
         {
-            return JsonConvert.SerializeObject(this.db.Tags);
+            if (s != null)
+            {
+                List<string> tags = new List<string>();
+
+                foreach(string tag in db.Tags)
+                {
+                    if (tag.Contains(s))
+                    {
+                        tags.Add(tag);
+
+                        if (limit.HasValue && tags.Count >= limit)
+                            break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(tags);
+            }
+
+            // No search term provided, return all tags
+            else
+            {
+                if (limit.HasValue)
+                    return JsonConvert.SerializeObject(db.Tags.GetRange(0, limit.Value));
+
+                else
+                    return JsonConvert.SerializeObject(db.Tags);
+            }
         }
     }
 }
