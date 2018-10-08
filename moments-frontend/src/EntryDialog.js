@@ -60,17 +60,12 @@ export default class EntryDialog extends React.Component {
             label="Kirjauksen teksti"
             onChange={e => this.handleEntryChange('text', e.target.value)}
           />
-          <div style={{marginTop: 25}}>
-            <CreatableSelect
-              isClearable
-              isMulti={true}
-              options={this.props.tags}
-              styles={selectStyle}
-              onChange={this.handleSelectChange}
-              placeholder="Tägit"
-              openOnClick={true}
-            />
-          </div>
+          <AutoComplete
+            label="Tägit"
+            options={this.props.tags}
+            threshold={2}
+            maxResults={5}
+          />
           <TextField
             required
             fullWidth
@@ -85,12 +80,6 @@ export default class EntryDialog extends React.Component {
             id="end_timestamp"
             label="Loppuajankohta"
             onChange={e => this.handleEntryChange('end_timestamp', e.target.value)}
-          />
-          <AutoComplete
-            label="Tägit"
-            options={this.props.tags}
-            threshold={2}
-            maxResults={5}
           />
 
         </DialogContent>

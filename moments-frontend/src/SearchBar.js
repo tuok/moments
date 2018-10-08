@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Select from 'react-select'
-import { Typography } from '@material-ui/core';
+import { Typography, Chip, Paper } from '@material-ui/core';
 import DatePicker from 'react-date-picker'
 import AutoComplete from './AutoComplete';
 
@@ -10,8 +10,12 @@ const selectStyle = {
   option: styles => ({...styles, fontFamily: 'Roboto'})
 }
 
-const searchBarStyles = {
+const searchBarStyle = {
+  paddingLeft: 10,
+  paddingRight: 10,
+  paddingBottom: 10,
   marginLeft: 5,
+  marginRight: 5,
 }
 
 const datePickerStyles = {
@@ -21,6 +25,11 @@ const datePickerStyles = {
 
 const sortStyle = {
   marginLeft: -3,
+}
+
+const tagStyle = {
+  marginRight: 5,
+  marginTop: 5,
 }
 
 export default class SearchBar extends React.Component {
@@ -33,20 +42,14 @@ export default class SearchBar extends React.Component {
       endDate: null
     }
 
-    this.handleSelectChange = this.handleSelectChange.bind(this)
+    this.handleTagChange = this.handleTagChange.bind(this)
+    this.handleTagInsert = this.handleTagInsert.bind(this)
+    this.handleTagRemove = this.handleTagRemove.bind(this)
     this.handleStartDateChange = this.handleStartDateChange.bind(this)
     this.handleEndDateChange = this.handleEndDateChange.bind(this)
+    this.removeLastTag = this.removeLastTag.bind(this)
   }
 
-  handleSelectChange(selectedTags) {
-    let tags = []
-    selectedTags.forEach(element => {
-      tags.push(element.value)
-    });
-
-    this.setState({searchTags: tags})
-    this.props.handleSearchChange(tags, this.state.startDate, this.state.endDate)
-  }
   
   handleStartDateChange(date) {
     this.setState({startDate: date})
@@ -58,26 +61,47 @@ export default class SearchBar extends React.Component {
     this.props.handleSearchChange(this.state.searchTags, this.state.startDate, date)
   }
 
+  handleTagInsert(tag) {
+    let tags = this.state.searchTags.slice()
+    tags.push(tag)
+
+    this.handleTagChange(tags)
+  }
+
+  handleTagRemove(tag) {
+    let tags = this.state.searchTags.filter(t => t !== tag)
+
+    this.handleTagChange(tags)
+  }
+
+  handleTagChange(tags) {
+    this.setState({searchTags: tags})
+    this.props.handleSearchChange(tags, this.state.startDate, this.state.endDate)
+  }
+
+  removeLastTag() {
+    let tags = this.state.searchTags
+    tags.pop()
+
+    this.handleTagChange(tags)
+  }
+
   render() {
+    let tags = this.state.searchTags.map(tag => {
+      return <Chip key={tag} label={tag} onDelete={e => this.handleTagRemove(tag) } style={tagStyle} />
+    })
+
     return (
-      <div style={searchBarStyles}>
-        <Typography variant="subheading">Hae kirjauksista</Typography>
+      <Paper style={searchBarStyle}>
         <AutoComplete
-            label="Tägit"
+            label="Hae kirjauksia tägien perusteella"
             options={this.props.tags}
             threshold={2}
             maxResults={8}
+            onOptionSelected={this.handleTagInsert}
+            emptyBackspaceFunc={this.removeLastTag}
         />
-        {/*
-        <Select
-          isMulti={true}
-          options={this.props.tags}
-          styles={selectStyle}
-          onChange={this.handleSelectChange}
-          placeholder="Hae kirjauksia tägien perusteella"
-          openOnClick={true}
-        />
-        */}
+        {tags}
         <div style={datePickerStyles}>
           <div>
             <DatePicker
@@ -111,7 +135,7 @@ export default class SearchBar extends React.Component {
           />
           Järjestä vanhimmasta uusimpaan
         </label>
-      </div>
+      </Paper>
     )
   }
 }
