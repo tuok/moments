@@ -14,6 +14,7 @@ namespace Moments.Interfaces
     {
         List<Entry> Entries { get; }
         List<string> Tags { get; }
+        Dictionary<string, int> TagsFrequencies { get; }
         Entry GetEntry(long id);
         void SaveEntry(Entry entry);
         void LoadData();

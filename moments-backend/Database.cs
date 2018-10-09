@@ -15,19 +15,19 @@ namespace Moments
     public class Database : IDatabase
     {
         private string path;
-        private SortedDictionary<string, string> allTags;
+        private SortedDictionary<string, int> allTags;
         private SortedDictionary<long, Entry> allEntries;
 
         public List<Entry> Entries { get; private set; }
-        public List<string> Tags { get; private set; }
-
+        public List<string> Tags { get { return allTags.Keys.ToList(); } }
+        public Dictionary<string, int> TagsFrequencies { get { return new Dictionary<string, int>(allTags); } }
         public static long MaxId { private set; get; }
 
         private Regex entryRegex = new Regex("^[0-9]{8}-[0-9]{4}_[0-9]{6}[.]json$");
 
         public Database(string path)
         {
-            allTags = new SortedDictionary<string, string>();
+            allTags = new SortedDictionary<string, int>();
             allEntries = new SortedDictionary<long, Entry>();
 
             if (path[path.Length - 1] != '/')
@@ -50,7 +50,7 @@ namespace Moments
         // Adds new entry in memory, but doesn't save it.
         public void AddEntry(Entry entry)
         {
-            this.refreshEntriesAndTags();
+            this.refreshEntries();
         }
 
         public void SaveEntry(Entry entry)
@@ -63,7 +63,7 @@ namespace Moments
 
         public void RemoveEntry(Entry entry)
         {
-            this.refreshEntriesAndTags();
+            this.refreshEntries();
             throw new NotImplementedException();
         }
 
@@ -73,15 +73,13 @@ namespace Moments
             entryFileNames.Sort();
             this.parseEntries(entryFileNames);
             this.updateLinksToEntries();
-            this.refreshEntriesAndTags();
+            this.refreshEntries();
         }
 
-        private void refreshEntriesAndTags()
+        private void refreshEntries()
         {
             Entries = allEntries.Values.ToList();
             Entries.Sort((e1, e2) => e1.CompareTo(e2));
-            Tags = allTags.Values.ToList();
-            Tags.Sort();
         }
 
         private (List<string> entryFiles, List<string> ignoredFiles) GetEntryFiles()
@@ -145,7 +143,9 @@ namespace Moments
                     foreach (string tag in entry.Tags)
                     {
                         if (!allTags.ContainsKey(tag))
-                            allTags.Add(tag, tag);
+                            allTags.Add(tag, 1);
+                        else
+                            allTags[tag]++;
                     }
 
                     // Keep list of all entries updated

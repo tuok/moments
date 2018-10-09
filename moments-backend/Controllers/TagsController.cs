@@ -22,35 +22,34 @@ namespace Moments.Controllers
         }
 
         // GET api/tags
-        public string Get(string s, int? limit)
+        public string Get(string s, int? limit, bool? frequencies)
         {
+            List<string> tags = new List<string>();
+            List<int> freqs = new List<int>();
+            Dictionary<string, int> retVals = new Dictionary<string, int>();
+
             if (s != null)
             {
-                List<string> tags = new List<string>();
-
-                foreach(string tag in db.Tags)
-                {
-                    if (tag.Contains(s))
-                    {
-                        tags.Add(tag);
-
-                        if (limit.HasValue && tags.Count >= limit)
-                            break;
-                    }
-                }
-
-                return JsonConvert.SerializeObject(tags);
+                if (limit.HasValue && db.TagsFrequencies.Count >= limit)
+                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)).Take(limit.Value));
+                else
+                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)));
             }
 
             // No search term provided, return all tags
             else
             {
-                if (limit.HasValue)
-                    return JsonConvert.SerializeObject(db.Tags.GetRange(0, limit.Value));
+                if (limit.HasValue && db.TagsFrequencies.Count >= limit)
+                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Take(limit.Value));
 
                 else
-                    return JsonConvert.SerializeObject(db.Tags);
+                    retVals = db.TagsFrequencies;
             }
+
+            if (frequencies.HasValue && frequencies.Value)
+                return JsonConvert.SerializeObject(retVals);
+            else
+                return JsonConvert.SerializeObject(retVals.Keys);
         }
     }
 }
