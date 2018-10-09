@@ -63,6 +63,7 @@ export default class EntryDialog extends React.Component {
           <AutoComplete
             label="Tägit"
             options={this.props.tags}
+            optionsFrequencies={this.props.tagsFrequencies}
             threshold={2}
             maxResults={5}
           />

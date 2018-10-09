@@ -64,16 +64,15 @@ export default class Moments extends React.Component {
         })
       })
 
-    fetch('http://localhost:5000/api/tags')
+    fetch('http://localhost:5000/api/tags?frequencies=True')
       .then(response => response.json())
-      .then(data => {
-        const tagOptions = data.map(t => {
-          return { value: t, label: t }
-        })
+      .then(tagsFrequencies => {
+        let tags = Object.keys(tagsFrequencies)
+        tags.sort()
 
         this.setState({
-          allTags: data,
-          allTagOptions: tagOptions,
+          allTagsFrequencies: tagsFrequencies,
+          allTags: tags,
           fetchingTags: false
         })
       })
@@ -85,7 +84,6 @@ export default class Moments extends React.Component {
           fetchingTags: false
         })
       })
-
   }
 
   handleError(err) {
@@ -123,12 +121,14 @@ export default class Moments extends React.Component {
         />
         <EntryList
           tags={this.state.allTags}
-          fetchingData={this.state.fetchingData}
+          tagsFrequencies={this.state.allTagsFrequencies}
+          fetchingEntries={this.state.fetchingData}
           allEntries={this.state.allEntries}
           visibleEntries={this.state.visibleEntries}
         />
         <EntryDialog
-          tags={this.state.allTags}
+          tags={this.state.tags}
+          tagsFrequencies={this.state.allTagsFrequencies}
           opened={this.state.entryDialogVisible}
           handleClose={this.handleEntryDialogVisibility}
           entry={this.state.entryDialogEntry}

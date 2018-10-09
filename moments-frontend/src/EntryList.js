@@ -84,6 +84,7 @@ export default class EntryList extends React.Component {
       <Fragment>
         <SearchBar
           tags={this.props.tags}
+          tagsFrequencies={this.props.tagsFrequencies}
           handleSearchChange={this.handleSearchChange}
           searchStartDate={this.state.searchStartDate}
           searchEndDate={this.state.searchEndDate}

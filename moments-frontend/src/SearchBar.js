@@ -96,6 +96,7 @@ export default class SearchBar extends React.Component {
         <AutoComplete
             label="Hae kirjauksia tägien perusteella"
             options={this.props.tags}
+            optionsFrequencies={this.props.tagsFrequencies}
             threshold={2}
             maxResults={8}
             onOptionSelected={this.handleTagInsert}

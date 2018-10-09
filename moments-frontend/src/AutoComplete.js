@@ -1,4 +1,4 @@
-// TODO: Priorisoi startswith-tulokset ekaksi ja muut vasta sen jälkeen
+// TODO: Järkkää tägit valmiiksi laskevaan frekvenssiltään laskevaan järjestykseen?
 
 import React, { Fragment } from 'react'
 import { TextField, Paper, Typography, Popover, MenuItem } from '@material-ui/core'
@@ -29,15 +29,20 @@ export default class AutoComplete extends React.Component {
         if (this.props.options[i].includes(term)) {
           options.push(this.props.options[i])
         }
-        
-        if (options.length >= this.props.maxResults) {
-          break
-        }
       }
+
+      options.sort((a, b) => {
+        let aFreq = this.props.optionsFrequencies[a]
+        let bFreq = this.props.optionsFrequencies[b]
+
+        if (aFreq < bFreq) return 1
+        if (aFreq > bFreq) return -1
+        return 0
+      })
 
       if (options.length > 0) {
         this.setState({
-          options: options,
+          options: options.slice(0, this.props.maxResults + 1),
           anchorElement: target,
           selectedIndex: 0,
         })
