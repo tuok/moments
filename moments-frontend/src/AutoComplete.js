@@ -1,5 +1,3 @@
-// TODO: Järkkää tägit valmiiksi laskevaan frekvenssiltään laskevaan järjestykseen?
-
 import React, { Fragment } from 'react'
 import { TextField, Paper, Typography, Popover, MenuItem } from '@material-ui/core'
 
@@ -21,7 +19,7 @@ export default class AutoComplete extends React.Component {
     selectedIndex: 0
   }
 
-  handleSearchTermChange(target, term) {
+  async searchTags(target, term) {
     if (term.length >= this.props.threshold) {
       let options = []
 
@@ -60,22 +58,27 @@ export default class AutoComplete extends React.Component {
     else {
       this.resetOptions()
     }
+  }
 
+  handleSearchTermChange(target, term) {
+    this.searchTags(target, term)
     this.setState({term: term})
   }
 
   resetOptions(resetTerm = true) {
-    let newState = {
+    if (resetTerm) {
+      this.setState({term: ""})
+    }
+
+    this.resetOptionsAsync()
+  }
+
+  async resetOptionsAsync() {
+    this.setState({
       options: [],
       anchorElement: null,
       selectedIndex: 0,
-    }
-
-    if (resetTerm) {
-      newState.term = ""
-    }
-
-    this.setState(newState)
+    })
   }
 
   handleKeyPress(e) {
