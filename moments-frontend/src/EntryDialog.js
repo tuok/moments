@@ -7,8 +7,6 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { TextField, Button } from '@material-ui/core'
 
-import CreatableSelect from 'react-select'
-
 import AutoComplete from './AutoComplete'
 
 const selectStyle = {

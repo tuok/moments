@@ -1,8 +1,3 @@
-/*
-TODO:
-- Optimoi react-select, on nyt aika hidas isolla määrällä tägejä.
-*/
-
 import 'typeface-roboto'
 import './global.css'
 

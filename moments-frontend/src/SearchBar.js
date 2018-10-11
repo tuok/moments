@@ -1,7 +1,6 @@
 import React from 'react'
 
-import Select from 'react-select'
-import { Typography, Chip, Paper } from '@material-ui/core';
+import { Chip, Paper } from '@material-ui/core';
 import DatePicker from 'react-date-picker'
 import AutoComplete from './AutoComplete';
 
