@@ -32,11 +32,20 @@ export default class AutoComplete extends React.Component {
       }
 
       options.sort((a, b) => {
+        let aIdx = a.indexOf(term)
+        let bIdx = b.indexOf(term)
+
+        // First compare search term location in tag
+        if (aIdx < bIdx) return -1
+        if (aIdx > bIdx) return 1
+
         let aFreq = this.props.optionsFrequencies[a]
         let bFreq = this.props.optionsFrequencies[b]
 
+        // If term location is same, compare tag frequencies
         if (aFreq < bFreq) return 1
         if (aFreq > bFreq) return -1
+
         return 0
       })
 
