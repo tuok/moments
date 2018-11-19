@@ -24,7 +24,6 @@ const styles = {
   }
 }
 
-
 export default class Layout extends React.Component {
   render() {
     return (
@@ -41,7 +40,7 @@ export default class Layout extends React.Component {
             <Button
               variant="contained"
               color="secondary"
-              onClick={e => this.props.handleNewEntryClick(true, null)}
+              onClick={e => this.props.handleNewEntryClick(null)}
             >
               Uusi kirjaus
               <AddIcon style={styles.addButton} />

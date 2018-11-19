@@ -9,6 +9,9 @@ import EntryDialog from './EntryDialog'
 import EntryList from './EntryList'
 import { Snackbar, Button } from '@material-ui/core';
 
+const UPDATE_ENTRY = "update"
+const INSERT_ENTRY = "insert"
+
 export default class Moments extends React.Component {
   constructor(props) {
     super(props)
@@ -21,9 +24,12 @@ export default class Moments extends React.Component {
       errorMessage: null,
       entryDialogVisible: false,
       entryDialogEntry: null,
+      selectedEntry: null,
     }
 
-    this.handleEntryDialogVisibility = this.handleEntryDialogVisibility.bind(this)
+    this.openEntryDialog = this.openEntryDialog.bind(this)
+    this.closeEntryDialog = this.closeEntryDialog.bind(this)
+    this.handleEntryModification = this.handleEntryModification.bind(this)
   }
 
   componentDidMount() {
@@ -88,10 +94,48 @@ export default class Moments extends React.Component {
     })
   }
 
-  handleEntryDialogVisibility(visible, entry) {
+  openEntryDialog(entry) {
     this.setState({
-      entryDialogVisible: visible,
-      entryDialogEntry: entry
+      entryDialogVisible: true,
+      selectedEntry: entry,
+    })
+  }
+
+  closeEntryDialog() {
+    this.setState({
+      entryDialogVisible: false,
+    })
+  }
+
+  handleEntryModification(entry) {
+    if (entry.entryId) {
+      this.updateEntry(entry)
+    } else {
+      this.insertEntry(entry)
+    }
+  }
+
+  async updateEntry(entry) {
+    this.setState({
+      entryDialogVisible: false,
+    })
+  }
+
+  async insertEntry(entry) {
+    fetch('http://localhost:5000/api/entries', {
+      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      body: JSON.stringify(entry),
+    })
+    .then(response => {
+      this.setState({
+        entryDialogVisible: false,
+        // Jäädäänkö entrydialogiin ja ilmoitetaan onnistunut lisäysviesti?
+      })
+    })
+    .catch(err => {
+      // Palaa entryDialogiin ja näytä virheilmoitus
+      console.log("Insert failed: " + err.toString())
     })
   }
 
@@ -112,7 +156,7 @@ export default class Moments extends React.Component {
     return (
       <Fragment>
         <Layout
-          handleNewEntryClick={this.handleEntryDialogVisibility}
+          handleNewEntryClick={this.openEntryDialog}
         />
         <EntryList
           tags={this.state.allTags}
@@ -122,11 +166,13 @@ export default class Moments extends React.Component {
           visibleEntries={this.state.visibleEntries}
         />
         <EntryDialog
-          tags={this.state.tags}
+          tags={this.state.allTags}
           tagsFrequencies={this.state.allTagsFrequencies}
           opened={this.state.entryDialogVisible}
-          handleClose={this.handleEntryDialogVisibility}
+          handleEntry={this.handleEntryModification}
+          handleClose={this.closeEntryDialog}
           entry={this.state.entryDialogEntry}
+
         />
         <Snackbar
           open={this.state.errorMessage != null}

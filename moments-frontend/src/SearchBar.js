@@ -79,14 +79,14 @@ export default class SearchBar extends React.Component {
   }
 
   removeLastTag() {
-    let tags = this.state.searchTags
+    let tags = this.state.searchTags.slice()
     tags.pop()
 
     this.handleTagChange(tags)
   }
 
   render() {
-    let tags = this.state.searchTags.map(tag => {
+    const tags = this.state.searchTags.map(tag => {
       return <Chip key={tag} label={tag} onDelete={e => this.handleTagRemove(tag) } style={tagStyle} />
     })
 
