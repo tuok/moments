@@ -44,7 +44,7 @@ export default class Moments extends React.Component {
         let entries = data.reverse()
 
         entries.forEach(e => {
-          e.timestamp = new Date(e.timestamp)
+          e.start_time = new Date(e.start_time)
         })
 
         // TODO: Add time formatting here

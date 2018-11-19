@@ -83,7 +83,7 @@ export default class Entry extends React.Component {
       <Card key={entry.id} style={entryCardStyle}>
         <CardContent>
           <Typography variant="title" style={entryCardTitleStyle}>
-            {this.formatDateFromComponents(entry.time_components)}
+            {this.formatDateFromComponents(entry.start_time_components)}
           </Typography>
           <Typography style={entryCardTextStyle} component="p">
               {entry.text}

@@ -64,8 +64,9 @@ namespace Moments.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody]Entry entry)
         {
+            Console.WriteLine(entry.ToString());
         }
 
         // PUT api/values/5
