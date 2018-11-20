@@ -124,7 +124,7 @@ export default class Moments extends React.Component {
   async insertEntry(entry) {
     fetch('http://localhost:5000/api/entries', {
       headers: { "Content-Type": "application/json" },
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify(entry),
     })
     .then(response => {

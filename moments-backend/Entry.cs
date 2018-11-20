@@ -8,7 +8,7 @@ namespace Moments.Models
     public class Entry : IComparable
     {
         [JsonProperty("id")]
-        public long Id { get; }
+        public long Id { get; set; }
         [JsonProperty("author")]
         public string Author { get; set; }
         [JsonProperty("tags")]
@@ -33,6 +33,8 @@ namespace Moments.Models
         public DateTime? StartTime { get; set; }
         [JsonProperty("end_time")]
         public DateTime? EndTime { get; set; }
+        [JsonIgnore]
+        public string Path { get; set; }
 
         public Entry(
             long id,

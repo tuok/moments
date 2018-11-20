@@ -62,16 +62,14 @@ namespace Moments.Controllers
             return JsonConvert.SerializeObject(this.db.Entries);
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]Entry entry)
+        [HttpPut]
+        public void Put([FromBody]Entry entry)
         {
-            Console.WriteLine(entry.ToString());
+            db.AddEntry(entry);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPost]
+        public void Post([FromBody]Entry entry)
         {
         }
 

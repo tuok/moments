@@ -50,20 +50,36 @@ namespace Moments
         // Adds new entry in memory, but doesn't save it.
         public void AddEntry(Entry entry)
         {
-            this.refreshEntries();
+            entry.Id = ++MaxId;
+
+            if (allEntries.ContainsKey(entry.Id))
+                throw new ApplicationException("Something went very wrong, id for new entry already exists.");
+
+            allEntries.Add(entry.Id, entry);
+            this.sortEntries();
+
+            SaveEntry(entry);
         }
 
+        // Method saves given entry. If Entry object doesn't have Path property assigned, new file
+        // will be created. Otherwise existing path will be overwritten.
         public void SaveEntry(Entry entry)
         {
-            // Method saves given entry. If Entry object doesn't have Path property assigned, new file
-            // will be created. Otherwise existing path will be overwritten.
+            // New entries do not have Path assigned, it must be generated
+            if (entry.Path == null)
+            {
+                entry.Path = Path.Combine(this.path, this.generatePathForEntry(entry));
+                Directory.CreateDirectory(Path.GetDirectoryName(entry.Path));
+            }
 
-            throw new NotImplementedException();
+            string content = JsonConvert.SerializeObject(entry, Formatting.Indented);
+            File.WriteAllText(entry.Path, content);
+            Console.WriteLine($"Entry #{entry.Id} was saved successfully in {entry.Path}");
         }
 
         public void RemoveEntry(Entry entry)
         {
-            this.refreshEntries();
+            this.sortEntries();
             throw new NotImplementedException();
         }
 
@@ -73,10 +89,10 @@ namespace Moments
             entryFileNames.Sort();
             this.parseEntries(entryFileNames);
             this.updateLinksToEntries();
-            this.refreshEntries();
+            this.sortEntries();
         }
 
-        private void refreshEntries()
+        private void sortEntries()
         {
             Entries = allEntries.Values.ToList();
             Entries.Sort((e1, e2) => e1.CompareTo(e2));
@@ -192,6 +208,21 @@ namespace Moments
                         throw new ApplicationException($"Entry #{entry.Id} links to entry #{linkedEntry}, which doesn't exist.");
                 }
             }
+        }
+
+        private string generatePathForEntry(Entry e)
+        {
+            int year = e.StartTimeComponents[0] ?? 9999;
+            int month = e.StartTimeComponents[1] ?? 1;
+            int day = e.StartTimeComponents[2] ?? 1;
+            int hour = e.StartTimeComponents[3] ?? 0;
+            int minute = e.StartTimeComponents[4] ?? 0;
+
+            string filename = $"{year:D4}{month:D2}{day:D2}-{hour:D2}{minute:D2}_{e.Id:D6}.json";
+            string dir = Path.Combine(year.ToString("D4"), month.ToString("D2"));
+            string path = Path.Combine(dir, filename);
+
+            return path;
         }
     }
 }
