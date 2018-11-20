@@ -1,14 +1,22 @@
 - Kirjauksen tiedot lähtevät vihdoin niin kuin pitää backendille, nyt tarvitsee enää hoitaa bäkkipuolen tallennus kuntoon.
+  * Toteuta jotenkin kirjausten päivitys frontille lisäyksen jälkeen.
   * Lähetä kirjaus vain jos päivämäärät on validit
   * Tägit jäävät ruudulle jos lisäysakkuna suljetaan ja avataan uudelleen
 
 - Toteuta kirjauksien muokkaus.
 
-- Lisää private-täppä
+- Toteuta kirjauksien poisto.
+  * Poista aluksi vain muistista se. muutos näkyy frontilla ja muistissa
+  * Vasta tämän jälkeen poista levyltä
+
+- Toteuta Tägien nimen muokkaus se. ko. tagi ei katoa kirjauksista, vaan muuttuu jokaiseen.
+
+- Lisää private-täppä.
 
 - Aikaleimoja on ihan liikaa, poista jokin käytöstä:
   * Readable timestamp (tämän käyttäjä kirjoittaa)
   * Time components (yksiselitteinen)
   * DateTime (luodaan Time componentsista)
 
-- Lisää päättymisaika Entryn otsikkoon, jos sellainen on. Jos ei, renderöi kuten nyt pelkkä alkuaika
+- Lisää päättymisaika Entryn otsikkoon, jos sellainen on. Jos ei, renderöi kuten nyt pelkkä alkuaika.
+  * Lisää myös titteli
