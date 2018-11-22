@@ -15,14 +15,14 @@ export function getTimeComponentsFromTimestamp(timestamp) {
   const t = timestamp.trim()
 
   if (yearRE.test(t)) {
-    return [t, "1", "1", "0", "0"]
+    return [t, "", "", "", ""]
   }
 
   else if (yearMonthRE.test(t)) {
     let tokens = t.split(/\D/)
 
     if (1 <= parseInt(tokens[0], 10) <= 12) {
-      return [tokens[1], tokens[0], "1", "0", "0"]
+      return [tokens[1], tokens[0], "", "", ""]
     }
   }
 
@@ -40,7 +40,7 @@ export function getTimeComponentsFromTimestamp(timestamp) {
         1 <= month && month <= 12 &&
         0 <= hour && hour <= 23
       ) {
-        return [year.toString(), month.toString(), day.toString(), hour.toString(), "0"]
+        return [year.toString(), month.toString(), day.toString(), hour.toString(), ""]
       }
 
       return false
@@ -65,7 +65,7 @@ export function getTimeComponentsFromTimestamp(timestamp) {
       1 <= day && day <= 31 &&
       1 <= month && month <= 12
     ) {
-      return [year.toString(), month.toString(), day.toString(), "0", "0"]
+      return [year.toString(), month.toString(), day.toString(), "", ""]
     }
     return false  
   }
