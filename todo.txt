@@ -3,6 +3,8 @@
   * Lähetä kirjaus vain jos päivämäärät on validit
   * Tägit jäävät ruudulle jos lisäysakkuna suljetaan ja avataan uudelleen
 
+- Lisää tarkistus lisättäessä kirjauksia, onko id mukana. Jos on, ei voida lisätä, koska on jo olemassa oleva.
+
 - Toteuta kirjauksien muokkaus.
 
 - Toteuta kirjauksien poisto.
