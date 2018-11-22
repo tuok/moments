@@ -63,9 +63,10 @@ namespace Moments.Controllers
         }
 
         [HttpPut]
-        public void Put([FromBody]Entry entry)
+        public string Put([FromBody]Entry entry)
         {
-            db.AddEntry(entry);
+            Entry newEntry = db.AddEntry(entry);
+            return JsonConvert.SerializeObject(newEntry);
         }
 
         [HttpPost]

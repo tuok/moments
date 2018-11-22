@@ -48,7 +48,7 @@ namespace Moments
         }
 
         // Adds new entry in memory, but doesn't save it.
-        public void AddEntry(Entry entry)
+        public Entry AddEntry(Entry entry)
         {
             entry.Id = ++MaxId;
 
@@ -58,12 +58,12 @@ namespace Moments
             allEntries.Add(entry.Id, entry);
             this.sortEntries();
 
-            SaveEntry(entry);
+            return SaveEntry(entry);
         }
 
         // Method saves given entry. If Entry object doesn't have Path property assigned, new file
         // will be created. Otherwise existing path will be overwritten.
-        public void SaveEntry(Entry entry)
+        public Entry SaveEntry(Entry entry)
         {
             // New entries do not have Path assigned, it must be generated
             if (entry.Path == null)
@@ -75,6 +75,8 @@ namespace Moments
             string content = JsonConvert.SerializeObject(entry, Formatting.Indented);
             File.WriteAllText(entry.Path, content);
             Console.WriteLine($"Entry #{entry.Id} was saved successfully in {entry.Path}");
+
+            return entry;
         }
 
         public void RemoveEntry(Entry entry)
