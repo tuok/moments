@@ -18,7 +18,7 @@ export default class Moments extends React.Component {
       fetchingTags: false,
       allTags: [],
       allEntries: [],
-      errorMessage: null,
+      message: null,
       entryDialogVisible: false,
       entryDialogEntry: null,
       selectedEntry: null,
@@ -58,7 +58,7 @@ export default class Moments extends React.Component {
         console.error(err)
         const msg = 'Tapahtumien haussa palvelimelta tapahtui virhe.'
         this.setState({
-          errorMessage: msg,
+          message: msg,
           fetchingEntries: false
         })
       })
@@ -79,7 +79,7 @@ export default class Moments extends React.Component {
         console.error(err)
         const msg = 'Tägien haussa palvelimelta tapahtui virhe.'
         this.setState({
-          errorMessage: msg,
+          message: msg,
           fetchingTags: false
         })
       })
@@ -88,7 +88,7 @@ export default class Moments extends React.Component {
   handleError(err) {
     this.setState({
       fetchingData: false,
-      errorMessage: err,
+      message: err,
     })
   }
 
@@ -120,6 +120,7 @@ export default class Moments extends React.Component {
   }
 
   async insertEntry(entry) {
+    // Send new entry to backend
     let addedEntry = await fetch('http://localhost:5000/api/entries', {
       headers: { "Content-Type": "application/json" },
       method: 'PUT',
@@ -127,24 +128,34 @@ export default class Moments extends React.Component {
     })
     .then(response => response.json())
     .then(result => result)
+    .catch(err => {
+      console.error(err)
+      this.setState({ message: "Kirjauksen lisäys epäonnistui. Konsolissa lisätietoja." })
+    })
 
+    // Abort if entry couldn't be added
+    if (!addedEntry) return
+
+    // Convert string timestamp to native timestamp
     addedEntry.start_time = new Date(addedEntry.start_time)
 
+    // Browse position, where new entry should be added among old entries
     let i = 0
-
     while (addedEntry.start_time < this.state.allEntries[i].start_time) i++
 
+    // Put new entry to correct position
     let entries = this.state.allEntries
     entries = entries.slice(0, i).concat(entry, entries.slice(i))
 
     this.setState({
       entryDialogVisible: false,
       allEntries: entries,
+      message: "Kirjaus lisätty onnistuneesti!"
     })
   }
 
   handleSnackbarClick = () => {
-    this.setState({ errorMessage: null });
+    this.setState({ message: null });
   };
 
   handleSnackbarClose = (event, reason) => {
@@ -152,7 +163,9 @@ export default class Moments extends React.Component {
       return;
     }
 
-    this.setState({ errorMessage: null });
+    this.setState({
+      message: null
+    });
   };
 
 
@@ -179,10 +192,10 @@ export default class Moments extends React.Component {
 
         />
         <Snackbar
-          open={this.state.errorMessage != null}
+          open={this.state.message != null}
           autoHideDuration={6000}
           onClose={this.handleSnackbarClose}
-          message={this.state.errorMessage}
+          message={this.state.message}
           action={[
             <Button
               key="undo"
@@ -190,7 +203,7 @@ export default class Moments extends React.Component {
               size="small"
               onClick={this.handleSnackbarClose}
             >
-              Sulje
+              OK
             </Button>,
           ]}
         />
