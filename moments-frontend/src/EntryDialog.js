@@ -10,11 +10,6 @@ import { TextField, Button, Chip, Typography } from '@material-ui/core'
 import AutoComplete from './AutoComplete'
 import { getTimeComponentsFromTimestamp } from './Utils'
 
-const selectStyle = {
-  control: styles => ({...styles, fontFamily: 'Roboto'}),
-  option: styles => ({...styles, fontFamily: 'Roboto'})
-}
-
 const tagStyle = {
   marginRight: 5,
   marginTop: 5,
@@ -72,7 +67,6 @@ export default class EntryDialog extends React.Component {
         })
       } else {
         let components = getTimeComponentsFromTimestamp(val)
-        console.log("Starttime: " + components.toString())
 
         if (components === false) {
           this.setState({
@@ -98,7 +92,6 @@ export default class EntryDialog extends React.Component {
         })
       } else {
         let components = getTimeComponentsFromTimestamp(val)
-        console.log("Endtime: " + components.toString())
 
         if (components === false) {
           this.setState({

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { TextField, Paper, Typography, Popover, MenuItem } from '@material-ui/core'
+import { TextField, Popover, MenuItem } from '@material-ui/core'
 
 const searchFieldStyle = {
   marginTop: 3

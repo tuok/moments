@@ -9,9 +9,6 @@ import EntryDialog from './EntryDialog'
 import EntryList from './EntryList'
 import { Snackbar, Button } from '@material-ui/core';
 
-const UPDATE_ENTRY = "update"
-const INSERT_ENTRY = "insert"
-
 export default class Moments extends React.Component {
   constructor(props) {
     super(props)

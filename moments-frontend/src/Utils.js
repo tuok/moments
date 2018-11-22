@@ -1,5 +1,3 @@
-import { func } from "prop-types";
-
 // Year: ^ 4 numbers $
 const yearRE = new RegExp(/^\d{4}$/)
 // Month/year: ^1-2 numbers '/' 4 numbers

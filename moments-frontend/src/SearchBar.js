@@ -4,11 +4,6 @@ import { Chip, Paper } from '@material-ui/core';
 import DatePicker from 'react-date-picker'
 import AutoComplete from './AutoComplete';
 
-const selectStyle = {
-  control: styles => ({...styles, fontFamily: 'Roboto'}),
-  option: styles => ({...styles, fontFamily: 'Roboto'})
-}
-
 const searchBarStyle = {
   paddingLeft: 10,
   paddingRight: 10,
