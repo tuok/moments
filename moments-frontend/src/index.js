@@ -30,6 +30,7 @@ export default class Moments extends React.Component {
     this.openEntryDialog = this.openEntryDialog.bind(this)
     this.closeEntryDialog = this.closeEntryDialog.bind(this)
     this.handleEntryModification = this.handleEntryModification.bind(this)
+    this.insertEntry = this.insertEntry.bind(this)
   }
 
   componentDidMount() {
@@ -122,20 +123,26 @@ export default class Moments extends React.Component {
   }
 
   async insertEntry(entry) {
-    fetch('http://localhost:5000/api/entries', {
+    let addedEntry = await fetch('http://localhost:5000/api/entries', {
       headers: { "Content-Type": "application/json" },
       method: 'PUT',
       body: JSON.stringify(entry),
     })
-    .then(response => {
-      this.setState({
-        entryDialogVisible: false,
-        // Jäädäänkö entrydialogiin ja ilmoitetaan onnistunut lisäysviesti?
-      })
-    })
-    .catch(err => {
-      // Palaa entryDialogiin ja näytä virheilmoitus
-      console.log("Insert failed: " + err.toString())
+    .then(response => response.json())
+    .then(result => result)
+
+    addedEntry.start_time = new Date(addedEntry.start_time)
+
+    let i = 0
+
+    while (addedEntry.start_time < this.state.allEntries[i].start_time) i++
+
+    let entries = this.state.allEntries
+    entries = entries.slice(0, i).concat(entry, entries.slice(i))
+
+    this.setState({
+      entryDialogVisible: false,
+      allEntries: entries,
     })
   }
 
