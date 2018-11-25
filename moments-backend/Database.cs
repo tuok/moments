@@ -50,10 +50,13 @@ namespace Moments
         // Adds new entry in memory, but doesn't save it.
         public Entry AddEntry(Entry entry)
         {
-            entry.Id = ++MaxId;
-
-            if (allEntries.ContainsKey(entry.Id))
+            if (allEntries.ContainsKey(MaxId + 1))
                 throw new ApplicationException("Something went very wrong, id for new entry already exists.");
+
+            if (entry.StartTime >= entry.EndTime)
+                throw new InvalidDataException("Entry start time must come before end time.");
+
+            entry.Id = ++MaxId;
 
             allEntries.Add(entry.Id, entry);
             this.sortEntries();
