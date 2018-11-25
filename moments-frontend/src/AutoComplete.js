@@ -103,8 +103,12 @@ export default class AutoComplete extends React.Component {
       this.setState({selectedIndex: newIndex})
     }
     // Enter
-    else if (e.keyCode === 13 && this.state.options.length > 0) {
-      this.optionSelected(this.state.options[this.state.selectedIndex])
+    else if (e.keyCode === 13) {
+      if (this.state.options.length > 0) {
+        this.optionSelected(this.state.options[this.state.selectedIndex])
+      } else {
+        this.optionSelected(this.state.term)
+      }
     }
     // Escape
     else if (e.keyCode === 27 && this.state.options.length > 0) {
