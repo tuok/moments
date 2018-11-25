@@ -139,17 +139,37 @@ export default class Moments extends React.Component {
     // Convert string timestamp to native timestamp
     addedEntry.start_time = new Date(addedEntry.start_time)
 
-    // Browse position, where new entry should be added among old entries
-    let i = 0
-    while (addedEntry.start_time < this.state.allEntries[i].start_time) i++
+    let entries = null
 
-    // Put new entry to correct position
-    let entries = this.state.allEntries
-    entries = entries.slice(0, i).concat(entry, entries.slice(i))
+    if (this.state.allEntries.length > 0) {
+      // Browse position, where new entry should be added among old entries
+      let i = 0
+      while (addedEntry.start_time < this.state.allEntries[i++].start_time) {
+        if (i >= this.state.allEntries.length) break
+      }
+
+      // Put new entry to correct position
+      entries = this.state.allEntries
+      entries = entries.slice(0, i).concat(addedEntry, entries.slice(i))
+    } else {
+      entries = [addedEntry]
+    }
+
+    let tags = this.state.allTags.slice()
+
+    // Add new tags to tag list
+    addedEntry.tags.forEach(tag => {
+      if (!tags.includes(tag)) {
+        tags.push(tag)
+      }
+    })
+
+    tags.sort()
 
     this.setState({
       entryDialogVisible: false,
       allEntries: entries,
+      allTags: tags,
       message: "Kirjaus lisätty onnistuneesti!"
     })
   }
