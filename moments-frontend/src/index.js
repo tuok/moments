@@ -9,6 +9,13 @@ import EntryDialog from './EntryDialog'
 import EntryList from './EntryList'
 import { Snackbar, Button } from '@material-ui/core';
 
+if (process.env.REACT_APP_API_URL === undefined) {
+  throw "Environment variable REACT_APP_API_URL must be defined in .env file."
+}
+
+const slash = process.env.REACT_APP_API_URL.slice(-1) != '/' ? '/' : ''
+const API_URL = process.env.REACT_APP_API_URL + slash
+
 export default class Moments extends React.Component {
   constructor(props) {
     super(props)
@@ -36,7 +43,7 @@ export default class Moments extends React.Component {
       fetchingTags: true
     })
 
-    fetch('http://localhost:5000/api/entries')
+    fetch(API_URL + 'entries')
       .then(response => response.json())
       .then(data => {
         let entries = data.reverse()
@@ -63,7 +70,7 @@ export default class Moments extends React.Component {
         })
       })
 
-    fetch('http://localhost:5000/api/tags?frequencies=True')
+    fetch(API_URL + 'tags?frequencies=True')
       .then(response => response.json())
       .then(tagsFrequencies => {
         let tags = Object.keys(tagsFrequencies)
@@ -121,7 +128,7 @@ export default class Moments extends React.Component {
 
   async insertEntry(entry) {
     // Send new entry to backend
-    let addedEntry = await fetch('http://localhost:5000/api/entries', {
+    let addedEntry = await fetch(API_URL + 'entries', {
       headers: { "Content-Type": "application/json" },
       method: 'PUT',
       body: JSON.stringify(entry),
