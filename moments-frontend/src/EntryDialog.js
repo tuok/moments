@@ -44,6 +44,21 @@ export default class EntryDialog extends React.Component {
     this.removeLastTag = this.removeLastTag.bind(this)
   }
 
+  clearData() {
+    this.setState({
+      tags: [],
+      entry: null,
+      title: "",
+      text: "",
+      startTimestamp: "",
+      endTimestamp: "",
+      startTimestampValid: true,
+      endTimestampValid: true,
+      startTimeComponents: null,
+      endTimeComponents: null,
+    })
+  }
+
   componentDidMount() {
     if (this.props.entry) {
       this.setState({
