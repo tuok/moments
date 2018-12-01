@@ -73,10 +73,21 @@ namespace Moments.Controllers
         {
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpGet("saveall")]
+        public string SaveAll()
         {
+            try
+            {
+                foreach (var entry in db.Entries)
+                    db.SaveEntry(entry);
+            }
+            catch (Exception e)
+            {
+                return JsonConvert.SerializeObject(new { result = "error", message = e.Message });
+            }
+
+            return JsonConvert.SerializeObject(new { result = "ok", message = "All entries saved successfully to disk." });
+
         }
     }
 }

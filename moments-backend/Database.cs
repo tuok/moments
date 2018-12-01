@@ -154,6 +154,7 @@ namespace Moments
                     };
 
                     Entry entry = JsonConvert.DeserializeObject<Entry>(rawJson, jss);
+                    entry.Path = entryFile;
                     entry.CreateTimestamps();
 
                     // Keep maximum ID number up to date
