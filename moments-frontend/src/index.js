@@ -202,15 +202,15 @@ export default class Moments extends React.Component {
           allEntries={this.state.allEntries}
           visibleEntries={this.state.visibleEntries}
         />
-        <EntryDialog
-          tags={this.state.allTags}
-          tagsFrequencies={this.state.allTagsFrequencies}
-          opened={this.state.entryDialogVisible}
-          handleEntry={this.handleEntryModification}
-          handleClose={this.closeEntryDialog}
-          entry={this.state.entryDialogEntry}
-
-        />
+        {this.state.entryDialogVisible ?
+          <EntryDialog
+            tags={this.state.allTags}
+            tagsFrequencies={this.state.allTagsFrequencies}
+            opened={this.state.entryDialogVisible}
+            handleEntry={this.handleEntryModification}
+            handleClose={this.closeEntryDialog}
+            entry={this.state.entryDialogEntry}
+          /> : null}
         <Snackbar
           open={this.state.message != null}
           autoHideDuration={6000}
