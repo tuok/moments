@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -26,10 +29,22 @@ namespace Moments
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            var cert = new X509Certificate2("cert.pfx", "");
+            var ip = IPAddress.Parse("0.0.0.0");
+
+            return WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(options =>
+                {
+                    options.Listen(ip, 5000);
+                    options.Listen(ip, 5001, listenoptions =>
+                    {
+                        listenoptions.UseHttps(cert);
+                    });
+                })
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0:5000/")
                 .Build();
+        }
     }
 }
