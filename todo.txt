@@ -9,7 +9,7 @@ Deployment
 Backend
 *******
 
-- Lisää logiikkaa sertifikaatin käsittelyyn, esim. devissa ajoa varten (sertiä ei tällöin tarvita).
+- Staticit eivät tule jakoon normaalisti (wwwroot ei "löydy"), mikäli backendiä ei käynnistetä binäärihakemistosta.
 - Backendin poikkeukset eivät tule nyt järkevästi frontille saakka.
 - Lisää tarkistus lisättäessä kirjauksia, onko id mukana. Jos on, ei voida lisätä, koska on jo olemassa oleva.
 - Ota autentikointi käyttöön middlewaressa funktiokohtaisen ratkaisun sijaan.
