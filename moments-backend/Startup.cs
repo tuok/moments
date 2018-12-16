@@ -39,12 +39,16 @@ namespace Moments
                         .AllowCredentials();
                     });
             });
-            
-            services.AddMvc();
+
+            services.AddMvc(config =>
+            {
+                config.Filters.Add(typeof(AuthFilter));
+            });
 
             // Initialize entry database
             Database db = new Database(Configuration["entryPath"]);
             db.LoadData();
+            db.SetApiKey(Configuration["username"] + Configuration["password"]);
 
             services.AddSingleton<IDatabase>(db);
         }
@@ -53,7 +57,6 @@ namespace Moments
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseCors("AllowAll");
-            app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -61,11 +64,9 @@ namespace Moments
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
+            app.UseHsts();
+            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

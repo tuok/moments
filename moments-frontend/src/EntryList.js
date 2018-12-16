@@ -73,7 +73,7 @@ export default class EntryList extends React.Component {
   render() {
     let progressIndicator = null
 
-    if (this.props.fetchingEntries) {
+    if (this.props.fetchingData) {
       progressIndicator = <CircularProgress size={50} />
     }
 

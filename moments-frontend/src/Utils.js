@@ -1,3 +1,5 @@
+import SHA512 from 'sha512-es'
+
 // Year: ^ 4 numbers $
 const yearRE = new RegExp(/^\d{4}$/)
 // Month/year: ^1-2 numbers '/' 4 numbers
@@ -68,4 +70,87 @@ export function getTimeComponentsFromTimestamp(timestamp) {
     return false  
   }
   return false
+}
+
+if (process.env.REACT_APP_API_URL === undefined) {
+  throw "Environment variable REACT_APP_API_URL must be defined in .env file."
+}
+
+const slash = process.env.REACT_APP_API_URL.slice(-1) != '/' ? '/' : ''
+const API_URL = process.env.REACT_APP_API_URL + slash
+
+export class Api {
+  username = ''
+  password = ''
+
+  static parseResponse(response) {
+    if (response.ok) {
+      return response.json()
+    } else if (response.status == 401) {
+      throw Error('Käyttäjänimi ja/tai salasana on väärin.')
+    } else {
+      throw Error('Pyyntöä ei voitu suorittaa virheen takia.')
+    }
+  }
+
+  static getHeaders() {
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        'auth': SHA512.hash(this.username + this.password),
+      }
+    }
+  }
+
+  static getTags() {
+    return fetch(API_URL + 'tags?frequencies=True', this.getHeaders())
+    .then(response => this.parseResponse(response))
+    .then(tagsFrequencies => {
+      let tags = Object.keys(tagsFrequencies)
+      tags.sort()
+
+      return { ok: true, data: { tags: tags, tagsFrequencies: tagsFrequencies } }
+    })
+    .catch(err => {
+      const msg = 'Tägien haussa palvelimelta tapahtui virhe: ' + err.message
+      console.error(msg)
+      return { ok: false, data: msg }
+    })
+  }
+
+  static getEntries() {
+    return fetch(API_URL + 'entries', this.getHeaders())
+    .then(response => this.parseResponse(response))
+    .then(data => {
+      let entries = data.reverse()
+
+      entries.forEach(e => {
+        e.start_time = new Date(e.start_time)
+      })
+
+      return { ok: true, data: entries}
+    }).catch(err => {
+      const msg = 'Tapahtumien haussa palvelimelta tapahtui virhe: ' + err.message
+      console.error(msg)
+      return { ok: false, data: msg }
+    })
+  }
+
+  static insertEntry(entry) {
+    // Send new entry to backend
+    return fetch(API_URL + 'entries', {
+      ...this.getHeaders(),
+      method: 'PUT',
+      body: JSON.stringify(entry),
+    })
+    .then(response => this.parseResponse(response))
+    .then(data => {
+      return { ok: true, data: data }
+    })
+    .catch(err => {
+      const msg = 'Kirjauksen lisäys epäonnistui: ' + err.message
+      console.error(msg)
+      this.setState({ ok: false, data: msg})
+    })
+  }
 }

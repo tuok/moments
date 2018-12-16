@@ -17,21 +17,47 @@ namespace Moments
     {
         public static void Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length < 5 || !checkArgs(args))
             {
-                Console.WriteLine("Path to entries root folder has to be given as an argument.");
+                Console.WriteLine("Following arguments have to be provided:");
+                Console.WriteLine("    entryPath=<root path to entries>");
+                Console.WriteLine("    username=<username for frontend requests>");
+                Console.WriteLine("    password=<password for frontend requests>");
+                Console.WriteLine("    certificate=<SSL certificate file path>");
+                Console.WriteLine("    certificatePassword=<SSL certificate password>");
                 return;
             }
-
-            Console.WriteLine($"Entry root path '{args[0]}' was provided.");
-            args[0] = "entryPath=" + args[0];
 
             BuildWebHost(args).Run();
         }
 
+        private static bool checkArgs(string[] args)
+        {
+            var mandatoryArgs = new string[] { "entryPath", "username", "password", "certificate", "certificatePassword" };
+            return args.All(arg => mandatoryArgs.Any(mArg => arg.Contains(mArg)));
+        }
+
         public static IWebHost BuildWebHost(string[] args)
         {
-            var cert = new X509Certificate2("cert.pfx", "");
+            string certKey = "certificate=";
+            string certPassKey = "certificatePassword=";
+
+            string certFile = null;
+            string certPass = null;
+
+            foreach (var arg in args)
+            {
+                if (arg.Contains(certKey))
+                    certFile = arg.Split(certKey)[1];
+
+                else if (arg.Contains(certPassKey))
+                    certPass = arg.Split(certPassKey)[1];
+            }
+
+            if (certFile == null || certPass == null)
+                throw new ArgumentException("Did not receive certificate file and/or certificate password!");
+
+            var cert = new X509Certificate2(certFile, certPass);
             var ip = IPAddress.Parse("0.0.0.0");
 
             return WebHost.CreateDefaultBuilder(args)

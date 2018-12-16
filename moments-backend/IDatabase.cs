@@ -19,5 +19,6 @@ namespace Moments.Interfaces
         Entry AddEntry(Entry entry);
         Entry SaveEntry(Entry entry);
         void LoadData();
+        string ApiKey { get; }
     }
 }

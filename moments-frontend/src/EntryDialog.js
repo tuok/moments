@@ -145,7 +145,7 @@ export default class EntryDialog extends React.Component {
     this.setState({tags: tags})
   }
 
-  populateEntryData() {
+  handleEntry() {
     if (this.state.text.length < 5) {
       this.setState({errorText: "Kirjauksen teksti on liian lyhyt."})
       return
@@ -183,7 +183,7 @@ export default class EntryDialog extends React.Component {
       entry.id = this.props.entry.id
     }
 
-    this.props.handleEntry(entry)
+    this.props.handleEntryMod(entry)
   }
 
   render() {
@@ -262,7 +262,7 @@ export default class EntryDialog extends React.Component {
           <Button onClick={e => this.props.handleClose()}>
             Peruuta
           </Button>
-          <Button onClick={e => this.populateEntryData()}>
+          <Button onClick={e => this.handleEntry()}>
             Lisää kirjaus
           </Button>
         </DialogActions>

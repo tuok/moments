@@ -4,26 +4,26 @@ Deployment
 - Ota uuden Momentsin alpha käyttöön kun ao. asiat ovat kunnossa.
 - Konfiguroi apin osoite fronttiin jotenkin ympäristömuuttujien tai .env.localin avulla
   * Varmistu, etteivät ympäristöjen tiedot mene gitiin!
-- Lisää APIin autentikointi
-  * Miten? API Key?
-- Ota käyttöön HTTPS!
-  * API tulee olla auki internetiin, koska Fronttiin joudutaan antamaan julkinen ip
-- Kestrel servaa JS:t
-
+- Cors, lisää Kapsin ip? Nyt on allow all
 
 Backend
 *******
 
+- Lisää logiikkaa sertifikaatin käsittelyyn, esim. devissa ajoa varten (sertiä ei tällöin tarvita).
 - Backendin poikkeukset eivät tule nyt järkevästi frontille saakka.
 - Lisää tarkistus lisättäessä kirjauksia, onko id mukana. Jos on, ei voida lisätä, koska on jo olemassa oleva.
+- Ota autentikointi käyttöön middlewaressa funktiokohtaisen ratkaisun sijaan.
 
 
 Frontend
 ********
 
+- Jos tägihaku ei täsmää enää mihinkään tägiin, poista ehdotukset näkyvistä
+- Lisää user/pass-tarkistus kun painetaan uusi kirjaus
 - Lisää private-täppä.
 - Lisää päättymisaika Entryn otsikkoon, jos sellainen on. Jos ei, renderöi kuten nyt pelkkä alkuaika.
   * Lisää myös titteli
+- Korjaa index.js:n initializen haut. Jos toinen onnistuu, feilaa toinenkin?
 
 
 Molemmat
