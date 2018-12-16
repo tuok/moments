@@ -9,20 +9,14 @@ using Newtonsoft.Json;
 using Moments.Models;
 using Moments.Interfaces;
 
-
 namespace Moments.Controllers
 {
     [Route("api/tags")]
-    public class TagsController : Controller
+    public class TagsController : BaseController
     {
-        private IDatabase db;
+        public TagsController(IDatabase database) : base(database) {}
 
-        public TagsController(IDatabase database) {
-            this.db = database;
-        }
-
-        // GET api/tags
-        public string Get(string s, int? limit, bool? frequencies)
+        public string Get(string s, int? limit, bool? frequencies, string apiKey)
         {
             List<string> tags = new List<string>();
             List<int> freqs = new List<int>();
@@ -30,20 +24,20 @@ namespace Moments.Controllers
 
             if (s != null)
             {
-                if (limit.HasValue && db.TagsFrequencies.Count >= limit)
-                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)).Take(limit.Value));
+                if (limit.HasValue && Database.TagsFrequencies.Count >= limit)
+                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)).Take(limit.Value));
                 else
-                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)));
+                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)));
             }
 
             // No search term provided, return all tags
             else
             {
-                if (limit.HasValue && db.TagsFrequencies.Count >= limit)
-                    retVals = new Dictionary<string, int>(db.TagsFrequencies.Take(limit.Value));
+                if (limit.HasValue && Database.TagsFrequencies.Count >= limit)
+                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Take(limit.Value));
 
                 else
-                    retVals = db.TagsFrequencies;
+                    retVals = Database.TagsFrequencies;
             }
 
             if (frequencies.HasValue && frequencies.Value)

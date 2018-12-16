@@ -13,35 +13,31 @@ using Moments.Interfaces;
 namespace Moments.Controllers
 {
     [Route("api/entries")]
-    public class EntriesController : Controller
+    public class EntriesController : BaseController
     {
-        private IDatabase db;
-
-        public EntriesController(IDatabase database) {
-            this.db = database;
-        }
+        public EntriesController(IDatabase database) : base(database) {}
 
         // GET api/entries
         public string Get(int? id, int? limit, int? begin, int? end)
         {
             if (id.HasValue)
             {
-                Entry e = this.db.GetEntry(id.Value);
+                Entry e = this.Database.GetEntry(id.Value);
 
                 return e == null ? "{}" : JsonConvert.SerializeObject(e);
             }
 
-            if (limit.HasValue && limit < this.db.Entries.Count)
+            if (limit.HasValue && limit < this.Database.Entries.Count)
             {
                 return JsonConvert.SerializeObject(
-                    this.db.Entries.GetRange(
-                        this.db.Entries.Count - limit.Value,
+                    this.Database.Entries.GetRange(
+                        this.Database.Entries.Count - limit.Value,
                         limit.Value
                     )
                 );
             }
 
-            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < this.db.Entries.Count)
+            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < this.Database.Entries.Count)
             {
                 int be = begin.Value;
                 int en = end.Value;
@@ -49,23 +45,23 @@ namespace Moments.Controllers
                 if (begin.Value < 1)
                     be = 1;
 
-                if (end.Value >= this.db.Entries.Count)
-                    en = this.db.Entries.Count;
+                if (end.Value >= this.Database.Entries.Count)
+                    en = this.Database.Entries.Count;
 
                 int range = en - be + 1;
 
                 return JsonConvert.SerializeObject(
-                    this.db.Entries.GetRange(be - 1, range)
+                    this.Database.Entries.GetRange(be - 1, range)
                 );
             }
 
-            return JsonConvert.SerializeObject(this.db.Entries);
+            return JsonConvert.SerializeObject(this.Database.Entries);
         }
 
         [HttpPut]
         public Entry Put([FromBody]Entry entry)
         {
-            return db.AddEntry(entry);
+            return Database.AddEntry(entry);
         }
 
         [HttpPost]
@@ -78,8 +74,8 @@ namespace Moments.Controllers
         {
             try
             {
-                foreach (var entry in db.Entries)
-                    db.SaveEntry(entry);
+                foreach (var entry in Database.Entries)
+                    Database.SaveEntry(entry);
             }
             catch (Exception e)
             {
