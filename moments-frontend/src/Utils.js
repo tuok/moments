@@ -73,10 +73,10 @@ export function getTimeComponentsFromTimestamp(timestamp) {
 }
 
 if (process.env.REACT_APP_API_URL === undefined) {
-  throw "Environment variable REACT_APP_API_URL must be defined in .env file."
+  throw Error('Environment variable REACT_APP_API_URL must be defined in .env file.')
 }
 
-const slash = process.env.REACT_APP_API_URL.slice(-1) != '/' ? '/' : ''
+const slash = process.env.REACT_APP_API_URL.slice(-1) !== '/' ? '/' : ''
 const API_URL = process.env.REACT_APP_API_URL + slash
 
 export class Api {
@@ -86,7 +86,7 @@ export class Api {
   static parseResponse(response) {
     if (response.ok) {
       return response.json()
-    } else if (response.status == 401) {
+    } else if (response.status === 401) {
       throw Error('Käyttäjänimi ja/tai salasana on väärin.')
     } else {
       throw Error('Pyyntöä ei voitu suorittaa virheen takia.')
