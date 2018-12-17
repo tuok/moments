@@ -18,6 +18,8 @@ Backend
 Frontend
 ********
 
+- Tägiehdotuksia tulee paikoin niin paljon vieläkin, että peittävät ikkunan kentän näkyvistä.
+- Kumitus poistaa vieläkin jo lisättyjä tägejä.
 - Jos tägihaku ei täsmää enää mihinkään tägiin, poista ehdotukset näkyvistä
 - Lisää user/pass-tarkistus kun painetaan uusi kirjaus
 - Lisää private-täppä.
