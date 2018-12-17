@@ -63,7 +63,6 @@ namespace Moments
             return WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(options =>
                 {
-                    options.Listen(ip, 5000);
                     options.Listen(ip, 5001, listenoptions =>
                     {
                         listenoptions.UseHttps(cert);
