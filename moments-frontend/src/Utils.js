@@ -140,7 +140,7 @@ export class Api {
     // Send new entry to backend
     return fetch(API_URL + 'entries', {
       ...this.getHeaders(),
-      method: 'PUT',
+      method: 'POST',
       body: JSON.stringify(entry),
     })
     .then(response => this.parseResponse(response))
