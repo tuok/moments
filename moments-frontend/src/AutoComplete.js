@@ -49,7 +49,7 @@ export default class AutoComplete extends React.Component {
       })
 
       if (options.length > 0) {
-        options = options.slice(0, this.props.maxResults + 1)
+        options = options.slice(0, this.props.maxResults)
         anchorElement = target
       }
 

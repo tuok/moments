@@ -92,7 +92,7 @@ export default class SearchBar extends React.Component {
             options={this.props.tags}
             optionsFrequencies={this.props.tagsFrequencies}
             threshold={2}
-            maxResults={8}
+            maxResults={5}
             onOptionSelected={this.handleTagInsert}
             emptyBackspaceFunc={this.removeLastTag}
         />
