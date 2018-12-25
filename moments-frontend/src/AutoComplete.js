@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { TextField, Popover, MenuItem } from '@material-ui/core'
+import { TextField, Paper, Popper, MenuItem } from '@material-ui/core'
 
 const searchFieldStyle = {
   marginTop: 3
@@ -148,24 +148,13 @@ export default class AutoComplete extends React.Component {
           onKeyDown={this.handleKeyPress}
           value={this.state.term}
         />
-        <Popover
+        <Popper
           open={Boolean(this.state.anchorElement)}
           anchorEl={this.state.anchorElement}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          onClose={this.handlePopoverClose}
-          onKeyDown={this.handleKeyPress}
-          disableAutoFocus={true}
-          disableEnforceFocus={true}
+          placement='bottom-start'
         >
-          {optionTexts}
-        </Popover>
+          <Paper>{optionTexts}</Paper>
+        </Popper>
       </Fragment>
     )
   }
