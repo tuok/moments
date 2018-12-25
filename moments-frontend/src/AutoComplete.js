@@ -22,6 +22,7 @@ export default class AutoComplete extends React.Component {
   async searchTags(target, term) {
     if (term.length >= this.props.threshold) {
       let options = []
+      let anchorElement = null
 
       for (let i = 0; i < this.props.options.length; i++) {
         if (this.props.options[i].includes(term)) {
@@ -48,12 +49,15 @@ export default class AutoComplete extends React.Component {
       })
 
       if (options.length > 0) {
-        this.setState({
-          options: options.slice(0, this.props.maxResults + 1),
-          anchorElement: target,
-          selectedIndex: 0,
-        })
+        options = options.slice(0, this.props.maxResults + 1)
+        anchorElement = target
       }
+
+      this.setState({
+        options: options,
+        anchorElement: anchorElement,
+        selectedIndex: 0,
+      })
     }
     else {
       this.resetOptions()
