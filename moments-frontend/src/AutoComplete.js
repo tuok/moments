@@ -65,8 +65,9 @@ export default class AutoComplete extends React.Component {
   }
 
   handleSearchTermChange(target, term) {
-    this.searchTags(target, term)
-    this.setState({term: term})
+    let lowerTerm = term.toLowerCase()
+    this.searchTags(target, lowerTerm)
+    this.setState({term: lowerTerm})
   }
 
   resetOptions(resetTerm = true) {
