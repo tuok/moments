@@ -1,10 +1,35 @@
 Deployment
 **********
 
-- Ota uuden Momentsin alpha käyttöön kun ao. asiat ovat kunnossa.
-- Konfiguroi apin osoite fronttiin jotenkin ympäristömuuttujien tai .env.localin avulla
-  * Varmistu, etteivät ympäristöjen tiedot mene gitiin!
+- Kirjauksen lisäys onnistuu kännykällä, mutta muokkausdialogi ei sulkeudu.
+  * Tapahtui koska:
+  System.InvalidOperationException: Failed to compare two elements in the array. ---> System.InvalidOperationException: Nullable object must have a value.
+   at Moments.Models.Entry.CompareTo(Object e) in /home/tuok/code/moments/moments-backend/Entry.cs:line 92
+   at System.Collections.Generic.ArraySortHelper`1.PickPivotAndPartition(T[] keys, Int32 lo, Int32 hi, Comparison`1 comparer)
+   at System.Collections.Generic.ArraySortHelper`1.IntroSort(T[] keys, Int32 lo, Int32 hi, Int32 depthLimit, Comparison`1 comparer)
+   at System.Collections.Generic.ArraySortHelper`1.Sort(T[] keys, Int32 index, Int32 length, Comparison`1 comparer)
+   --- End of inner exception stack trace ---
+   at System.Collections.Generic.ArraySortHelper`1.Sort(T[] keys, Int32 index, Int32 length, Comparison`1 comparer)
+   at System.Collections.Generic.List`1.Sort(Comparison`1 comparison)
+   at Moments.Database.AddEntry(Entry entry) in /home/tuok/code/moments/moments-backend/Database.cs:line 80
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()
+   at Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Cors.Infrastructure.CorsMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
 - Cors, lisää Kapsin ip? Nyt on allow all
+
 
 Backend
 *******
@@ -18,13 +43,8 @@ Backend
 Frontend
 ********
 
-- Tägiehdotuksia tulee paikoin niin paljon vieläkin, että peittävät ikkunan kentän näkyvistä.
-- Kumitus poistaa vieläkin jo lisättyjä tägejä.
-- Jos tägihaku ei täsmää enää mihinkään tägiin, poista ehdotukset näkyvistä
 - Lisää user/pass-tarkistus kun painetaan uusi kirjaus
 - Lisää private-täppä.
-- Lisää päättymisaika Entryn otsikkoon, jos sellainen on. Jos ei, renderöi kuten nyt pelkkä alkuaika.
-  * Lisää myös titteli
 - Korjaa index.js:n initializen haut. Jos toinen onnistuu, feilaa toinenkin?
 
 
