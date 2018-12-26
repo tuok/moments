@@ -8,7 +8,7 @@ const entryCardStyle = {
   marginRight: 5,
 }
 
-const entryCardTitleStyle = {
+const entryCardTimestampStyle = {
   marginBottom: 10,
 }
 
@@ -23,7 +23,7 @@ const tagStyle = {
 }
 
 const tagTitleStyle = {
-  fontWeight: "bold",
+  fontWeight: 'bold',
   marginBottom: 0,
 }
 
@@ -78,13 +78,17 @@ export default class Entry extends React.Component {
   render() {
     let entry = this.props.entry
     let tags = this.props.entry.tags.map(t => <Chip key={t} label={t} style={tagStyle} />)
+    let timeText = this.formatDateFromComponents(entry.start_time_components)
+
+    if (entry.end_time_components !== null) {
+      timeText += " - " + this.formatDateFromComponents(entry.end_time_components)
+    }
 
     return (
       <Card key={entry.id} style={entryCardStyle}>
         <CardContent>
-          <Typography variant="title" style={entryCardTitleStyle}>
-            {this.formatDateFromComponents(entry.start_time_components)}
-          </Typography>
+          {entry.title !== null ? <Typography variant="title">{entry.title}</Typography> : null}
+          <Typography variant="subheading" style={entryCardTimestampStyle}>{timeText}</Typography>
           <Typography style={entryCardTextStyle} component="p">
               {entry.text}
           </Typography>
