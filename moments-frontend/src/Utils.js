@@ -13,21 +13,19 @@ const hourMinuteRE = new RegExp(/(\d){1,2}:(\d){2}$/)
 
 export function getTimeComponentsFromTimestamp(timestamp) {
   const t = timestamp.trim()
+  let tokens = t.split(/\D/)
 
   if (yearRE.test(t)) {
     return [t, "", "", "", ""]
   }
 
   else if (yearMonthRE.test(t)) {
-    let tokens = t.split(/\D/)
-
     if (1 <= parseInt(tokens[0], 10) <= 12) {
       return [tokens[1], tokens[0], "", "", ""]
     }
   }
 
   else if (dateRE.test(t)) {
-    let tokens = t.split(/\D/)
     let day = parseInt(tokens[0], 10)
     let month = parseInt(tokens[1], 10)
     let year = parseInt(tokens[2], 10)
