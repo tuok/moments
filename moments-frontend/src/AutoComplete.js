@@ -157,6 +157,7 @@ export default class AutoComplete extends React.Component {
           open={Boolean(this.state.anchorElement)}
           anchorEl={this.state.anchorElement}
           placement='bottom-start'
+          style={{zIndex: 1000000}}
         >
           <Paper>{optionTexts}</Paper>
         </Popper>
