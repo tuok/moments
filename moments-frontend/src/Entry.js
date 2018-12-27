@@ -29,6 +29,10 @@ const tagTitleStyle = {
 
 
 export default class Entry extends React.Component {
+  notEmpty(val) {
+    return val !== null && val !== '' && val !== undefined
+  }
+
   formatDateFromComponents(times) {
     let readable_timestamp = ''
 
@@ -36,14 +40,14 @@ export default class Entry extends React.Component {
     let separator = '/'
 
     // Handle year
-    if (times[0]) {
+    if (this.notEmpty(times[0])) {
       readable_timestamp = times[0].toString()
     }
 
     // Handle month
-    if (times[1]) {
+    if (this.notEmpty(times[1])) {
       // Check if day is defined so that we can display "month/year" or "day.month.year"
-      if (times[2]) {
+      if (this.notEmpty(times[2])) {
         // Day is defined
         separator = '.'
       }
@@ -56,7 +60,7 @@ export default class Entry extends React.Component {
     }
 
     // If day of month is defined
-    if (times[2]) {
+    if (this.notEmpty(times[2])) {
       // 03.2018 -> 23.03.2018
       readable_timestamp =
         times[2].toString().padStart(2, '0') +
@@ -64,11 +68,11 @@ export default class Entry extends React.Component {
         readable_timestamp
 
       // If hour is defined
-      if (times[3]) {
+      if (this.notEmpty(times[3])) {
         // 23.03.2018 -> 23.03.2018 06:
         readable_timestamp += ` ${times[3].toString().padStart(2, '0')}:`
         // 23.03.2018 06: -> 23.03.2018 06:xx or 23.03.2018 06:41
-        readable_timestamp += times[4] ? times[4].toString().padStart(2, '0') : 'xx'
+        readable_timestamp += this.notEmpty(times[4]) ? times[4].toString().padStart(2, '0') : 'xx'
       }
     }
 
