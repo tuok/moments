@@ -50,12 +50,12 @@ export default class EntryList extends React.Component {
 
         if (startDate != null) {
           entries = entries.filter((e) => {
-            return e.timestamp >= startDate
+            return e.start_time >= startDate
           })
         }
         if (endDate != null) {
           entries = entries.filter((e) => {
-            return e.timestamp <= endDate
+            return e.start_time <= endDate
           })
         }
         if (this.state.searchTags.length > 0) {
