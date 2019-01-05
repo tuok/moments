@@ -43,6 +43,7 @@ Backend
 Frontend
 ********
 
+- Laita shift/ctrl+del poistamaan tägejä, del on vähän riskialtis.
 - Lisää user/pass-tarkistus kun painetaan uusi kirjaus
 - Lisää private-täppä.
 - Korjaa index.js:n initializen haut. Jos toinen onnistuu, feilaa toinenkin?

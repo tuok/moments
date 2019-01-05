@@ -119,10 +119,12 @@ export default class AutoComplete extends React.Component {
     else if (e.keyCode === 27 && this.state.options.length > 0) {
       this.resetOptions(false)
     }
-    // Backspace
+    // Backspace (currently disabled)
+    /*
     else if (e.keyCode === 8 && this.props.emptyBackspaceFunc && this.state.term.length < 1) {
       this.props.emptyBackspaceFunc()
     }
+    */
   }
 
   optionSelected(option) {
