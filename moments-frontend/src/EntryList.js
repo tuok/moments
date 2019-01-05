@@ -13,6 +13,7 @@ export default class EntryList extends React.Component {
       entriesVisible: 50,
 
       searchTags: [],
+      searchTerm: null,
       searchStartDate: null,
       searchEndDate: null,
       sortAscending: false,
@@ -22,8 +23,9 @@ export default class EntryList extends React.Component {
     this.handleSortChange = this.handleSortChange.bind(this)
   }
 
-  handleSearchChange(tags, startDate, endDate) {
+  handleSearchChange(fullTextTerm, tags, startDate, endDate) {
     this.setState({
+      searchTerm: fullTextTerm,
       searchTags: tags,
       searchStartDate: startDate,
       searchEndDate: endDate
@@ -43,24 +45,36 @@ export default class EntryList extends React.Component {
       }
 
       // If tags have been entered into search bar, or if search dates
-      // have been specified, filter cards based on search tags.
-      if (this.state.searchTags.length > 0 || this.state.searchStartDate != null || this.state.searchEndDate != null) {
+      // have been specified, of if full text search term has been specified, filter entries based on search terms.
+      if (this.state.searchTags.length > 0 ||
+          this.state.searchStartDate != null ||
+          this.state.searchEndDate != null ||
+          this.state.searchTerm != null) {
         let startDate = this.state.searchStartDate
         let endDate = this.state.searchEndDate
+        let term = this.state.searchTerm
 
         if (startDate != null) {
           entries = entries.filter((e) => {
             return e.start_time >= startDate
           })
         }
+
         if (endDate != null) {
           entries = entries.filter((e) => {
             return e.start_time <= endDate
           })
         }
+
         if (this.state.searchTags.length > 0) {
           entries = entries.filter((e) => {
             return this.state.searchTags.every((tag) => e.tags.includes(tag))
+          })
+        }
+
+        if (term !== null) {
+          entries = entries.filter((e) => {
+            return e.text.toLowerCase().includes(term)
           })
         }
       }

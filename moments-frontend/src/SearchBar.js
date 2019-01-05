@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { Chip, Paper } from '@material-ui/core';
-import DatePicker from 'react-date-picker'
+import { Chip, Paper, TextField } from '@material-ui/core';
 import AutoComplete from './AutoComplete';
+import { getTimeComponentsFromTimestamp, getDateFromTimeComponents }from './Utils';
 
 const searchBarStyle = {
   paddingLeft: 10,
@@ -12,9 +12,12 @@ const searchBarStyle = {
   marginRight: 5,
 }
 
-const datePickerStyles = {
-  marginTop: 8,
-  display: "flex"
+const fullTextSearchStyle = {
+
+}
+
+const datePickerStyle = {
+  marginRight: 8,
 }
 
 const sortStyle = {
@@ -24,6 +27,7 @@ const sortStyle = {
 const tagStyle = {
   marginRight: 5,
   marginTop: 5,
+  marginBottom: 5,
 }
 
 export default class SearchBar extends React.Component {
@@ -32,10 +36,12 @@ export default class SearchBar extends React.Component {
 
     this.state = {
       searchTags: [],
+      fullTextSearchTerm: null,
       startDate: null,
       endDate: null
     }
 
+    this.handleFullTextSearchTermChange = this.handleFullTextSearchTermChange.bind(this)
     this.handleTagChange = this.handleTagChange.bind(this)
     this.handleTagInsert = this.handleTagInsert.bind(this)
     this.handleTagRemove = this.handleTagRemove.bind(this)
@@ -44,15 +50,40 @@ export default class SearchBar extends React.Component {
     this.removeLastTag = this.removeLastTag.bind(this)
   }
 
+  handleFullTextSearchTermChange(term) {
+    if (term.length >= 3) {
+      this.setState({fullTextSearchTerm: term})
+      this.props.handleSearchChange(term, this.state.searchTags, this.state.startDate, this.state.endDate)
+    } else if (this.state.fullTextSearchTerm !== null) {
+      this.setState({startDate: null})
+      this.props.handleSearchChange(null, this.state.searchTags, this.state.startDate, this.state.endDate)
+    }
+  }
   
   handleStartDateChange(date) {
-    this.setState({startDate: date})
-    this.props.handleSearchChange(this.state.searchTags, date, this.state.endDate)
+    let components = getTimeComponentsFromTimestamp(date)
+
+    if (components !== false) {
+      let dt = getDateFromTimeComponents(components)
+      this.setState({startDate: dt})
+      this.props.handleSearchChange(this.state.fullTextSearchTerm, this.state.searchTags, dt, this.state.endDate)
+    } else if (this.state.startDate !== null) {
+      this.setState({startDate: null})
+      this.props.handleSearchChange(this.state.fullTextSearchTerm, this.state.searchTags, null, this.state.endDate)
+    }
   }
 
   handleEndDateChange(date) {
-    this.setState({endDate: date})
-    this.props.handleSearchChange(this.state.searchTags, this.state.startDate, date)
+    let components = getTimeComponentsFromTimestamp(date)
+
+    if (components !== false) {
+      let dt = getDateFromTimeComponents(components)
+      this.setState({endDate: dt})
+      this.props.handleSearchChange(this.state.fullTextSearchTerm, this.state.searchTags, this.state.startDate, dt)
+    } else if (this.state.endDate !== null) {
+      this.setState({endDate: null})
+      this.props.handleSearchChange(this.state.fullTextSearchTerm, this.state.searchTags, this.state.endDate, null)
+    }
   }
 
   handleTagInsert(tag) {
@@ -70,7 +101,7 @@ export default class SearchBar extends React.Component {
 
   handleTagChange(tags) {
     this.setState({searchTags: tags})
-    this.props.handleSearchChange(tags, this.state.startDate, this.state.endDate)
+    this.props.handleSearchChange(this.state.fullTextSearchTerm, tags, this.state.startDate, this.state.endDate)
   }
 
   removeLastTag() {
@@ -97,30 +128,25 @@ export default class SearchBar extends React.Component {
             emptyBackspaceFunc={this.removeLastTag}
         />
         {tags}
-        <div style={datePickerStyles}>
-          <div>
-            <DatePicker
-              value={this.state.startDate}
-              dateFormat="DD.MM.YYYY" 
-              isClearable={true}
-              onChange={this.handleStartDateChange}
-              placeholderText="Alkaen pvm"
-              showWeekNumbers
-              showYearDropdown
-            />
-          </div>
-          <div style={{marginLeft: 10}}>
-            <DatePicker 
-              value={this.state.endDate}
-              dateFormat="DD.MM.YYYY" 
-              isClearable={true}
-              onChange={this.handleEndDateChange}
-              placeholderText="Päättyen pvm"
-              showWeekNumbers
-              showYearDropdown
-            />
-          </div>
-        </div>
+        <TextField
+          id="fullTextSearch"
+          label="Hae kirjauksia merkkijonon perusteella"
+          fullWidth={true}
+          style={fullTextSearchStyle}
+          onChange={e => this.handleFullTextSearchTermChange(e.target.value)}
+        />
+        <TextField
+          id="startTimestamp"
+          label="Alkaen pvm"
+          style={datePickerStyle}
+          onChange={e => this.handleStartDateChange(e.target.value)}
+        />
+        <TextField
+          id="endTimestamp"
+          label="Päättyen pvm"
+          style={datePickerStyle}
+          onChange={e => this.handleEndDateChange(e.target.value)}
+        />
         <label style={sortStyle}>
           <input
             type="checkbox"

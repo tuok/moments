@@ -11,6 +11,22 @@ const hourRE = new RegExp(/(\d){1,2}:xx$/)
 // 1-2 numbers ':' 2 numbers $
 const hourMinuteRE = new RegExp(/(\d){1,2}:(\d){2}$/)
 
+export function getDateFromTimeComponents(comps) {
+  let y = parseInt(comps[0], 10)
+  let m = parseInt(comps[1], 10) - 1
+  let d = parseInt(comps[2], 10)
+  let h = parseInt(comps[3], 10)
+  let mi = parseInt(comps[4], 10)
+
+  if (isNaN(y)) return false
+  if (isNaN(m)) m = 0
+  if (isNaN(d)) d = 1
+  if (isNaN(h)) h = 0
+  if (isNaN(mi)) mi = 0
+
+  return new Date(y, m, d, h, mi)
+}
+
 export function getTimeComponentsFromTimestamp(timestamp) {
   const t = timestamp.trim()
   let tokens = t.split(/\D/)
