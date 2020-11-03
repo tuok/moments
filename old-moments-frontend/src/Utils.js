@@ -1,5 +1,3 @@
-import SHA512 from 'sha512-es'
-
 // Year: ^ 4 numbers $
 const yearRE = new RegExp(/^\d{4}$/)
 // Month/year: ^1-2 numbers '/' 4 numbers
@@ -94,14 +92,9 @@ const slash = process.env.REACT_APP_API_URL.slice(-1) !== '/' ? '/' : ''
 const API_URL = process.env.REACT_APP_API_URL + slash
 
 export class Api {
-  username = ''
-  password = ''
-
   static parseResponse(response) {
     if (response.ok) {
       return response.json()
-    } else if (response.status === 401) {
-      throw Error('Käyttäjänimi ja/tai salasana on väärin.')
     } else {
       throw Error('Pyyntöä ei voitu suorittaa virheen takia.')
     }
@@ -110,8 +103,7 @@ export class Api {
   static getHeaders() {
     return {
       headers: {
-        'Content-Type': 'application/json',
-        'auth': SHA512.hash(this.username + this.password),
+        'Content-Type': 'application/json'
       }
     }
   }
