@@ -24,7 +24,6 @@ namespace Moments
         public List<string> Tags { get { return allTags.Keys.ToList(); } }
         public Dictionary<string, int> TagsFrequencies { get { return new Dictionary<string, int>(allTags); } }
         public static long MaxId { private set; get; }
-        public string ApiKey { get; private set; }
 
         private Regex entryRegex = new Regex("^[0-9]{8}-[0-9]{4}_[0-9]{6}[.]json$");
 
@@ -40,19 +39,6 @@ namespace Moments
 
             if (!Directory.Exists(path))
                 throw new IOException($"Specified path {path} doesn't exist. Cannot load entries.");
-        }
-
-        public void SetApiKey(string key)
-        {
-            var sha512 = SHA512.Create();
-            var bytes = sha512.ComputeHash(System.Text.Encoding.UTF8.GetBytes(key));
-
-            var sb = new StringBuilder();
-
-            foreach(byte b in bytes)
-                sb.AppendFormat("{0:X2}", b);
-
-            ApiKey = sb.ToString().ToLower();
         }
 
         public Entry GetEntry(long id)
