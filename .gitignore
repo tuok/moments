@@ -3,3 +3,5 @@ data
 [Bb]in/
 [Oo]bj/
 yarn.*
+.idea
+data/
