@@ -16,26 +16,26 @@ namespace Moments
 {
     public class Database : IDatabase
     {
-        private string path;
-        private SortedDictionary<string, int> allTags;
-        private SortedDictionary<long, Entry> allEntries;
+        private readonly string _path;
+        private readonly SortedDictionary<string, int> _allTags;
+        private readonly SortedDictionary<long, Entry> _allEntries;
+        private static long MaxId { set; get; }
 
         public List<Entry> Entries { get; private set; }
-        public List<string> Tags { get { return allTags.Keys.ToList(); } }
-        public Dictionary<string, int> TagsFrequencies { get { return new Dictionary<string, int>(allTags); } }
-        public static long MaxId { private set; get; }
+        public List<string> Tags => _allTags.Keys.ToList();
+        public Dictionary<string, int> TagsFrequencies => new Dictionary<string, int>(_allTags);
 
-        private Regex entryRegex = new Regex("^[0-9]{8}-[0-9]{4}_[0-9]{6}[.]json$");
+        private readonly Regex _entryRegex = new Regex("^[0-9]{8}-[0-9]{4}_[0-9]{6}[.]json$");
 
         public Database(string path)
         {
-            allTags = new SortedDictionary<string, int>();
-            allEntries = new SortedDictionary<long, Entry>();
+            _allTags = new SortedDictionary<string, int>();
+            _allEntries = new SortedDictionary<long, Entry>();
 
             if (path[path.Length - 1] != '/')
                 path += '/';
 
-            this.path = path;
+            _path = path;
 
             if (!Directory.Exists(path))
                 throw new IOException($"Specified path {path} doesn't exist. Cannot load entries.");
@@ -43,16 +43,16 @@ namespace Moments
 
         public Entry GetEntry(long id)
         {
-            if (!this.allEntries.ContainsKey(id))
+            if (!_allEntries.ContainsKey(id))
                 return null;
 
-            return this.allEntries[id];
+            return _allEntries[id];
         }
 
         // Adds new entry in memory, but doesn't save it.
         public Entry AddEntry(Entry entry)
         {
-            if (allEntries.ContainsKey(MaxId + 1))
+            if (_allEntries.ContainsKey(MaxId + 1))
                 throw new ApplicationException("Something went very wrong, id for new entry already exists.");
 
             if (entry.StartTime >= entry.EndTime)
@@ -60,8 +60,8 @@ namespace Moments
 
             entry.Id = ++MaxId;
 
-            allEntries.Add(entry.Id, entry);
-            this.sortEntries();
+            _allEntries.Add(entry.Id, entry);
+            SortEntries();
 
             return SaveEntry(entry);
         }
@@ -73,7 +73,7 @@ namespace Moments
             // New entries do not have Path assigned, it must be generated
             if (entry.Path == null)
             {
-                entry.Path = Path.Combine(this.path, this.generatePathForEntry(entry));
+                entry.Path = Path.Combine(_path, entry.GetPath());
                 Directory.CreateDirectory(Path.GetDirectoryName(entry.Path));
             }
 
@@ -86,41 +86,41 @@ namespace Moments
 
         public void RemoveEntry(Entry entry)
         {
-            this.sortEntries();
+            this.SortEntries();
             throw new NotImplementedException();
         }
 
         public void LoadData()
         {
-            List<string> entryFileNames = this.GetEntryFiles().entryFiles;
+            List<string> entryFileNames = GetEntryFiles().entryFiles;
             entryFileNames.Sort();
-            this.parseEntries(entryFileNames);
-            this.updateLinksToEntries();
-            this.sortEntries();
+            ParseEntries(entryFileNames);
+            UpdateLinksToEntries();
+            SortEntries();
         }
 
-        private void sortEntries()
+        private void SortEntries()
         {
-            Entries = allEntries.Values.ToList();
+            Entries = _allEntries.Values.ToList();
             Entries.Sort((e1, e2) => e1.CompareTo(e2));
         }
 
         private (List<string> entryFiles, List<string> ignoredFiles) GetEntryFiles()
         {
-            Console.WriteLine($"Browsing through path '{this.path}'...");
+            Console.WriteLine($"Browsing through path '{_path}'...");
 
             List<string> entryFiles = new List<string>();
             List<string> ignoredFiles = new List<string>();
 
-            foreach (var jsonFilePath in Directory.GetFiles(this.path, "*.json", SearchOption.AllDirectories))
+            foreach (var jsonFilePath in Directory.GetFiles(_path, "*.json", SearchOption.AllDirectories))
             {
                 string jsonFile = Path.GetFileName(jsonFilePath);
 
-                if (entryRegex.IsMatch(jsonFile))
+                if (_entryRegex.IsMatch(jsonFile))
                     entryFiles.Add(jsonFilePath);
 
                 else
-                    ignoredFiles.Add(jsonFilePath);                
+                    ignoredFiles.Add(jsonFilePath);
             }
 
             Console.WriteLine($"Browsing finished. Found {entryFiles.Count} entry candidates.");
@@ -136,12 +136,10 @@ namespace Moments
             return (entryFiles, ignoredFiles);
         }
 
-        private void parseEntries(List<string> entryFiles)
+        private void ParseEntries(List<string> entryFiles)
         {
             Dictionary<string, Exception> ignoredFiles = new Dictionary<string, Exception>();
             int entriesLoadedCount = 0;
-
-            List<string> errors = new List<string>();
 
             foreach (string entryFile in entryFiles)
             {
@@ -157,7 +155,6 @@ namespace Moments
 
                     Entry entry = JsonConvert.DeserializeObject<Entry>(rawJson, jss);
                     entry.Path = entryFile;
-                    entry.CreateTimestamps();
 
                     // Keep maximum ID number up to date
                     if (entry.Id > MaxId)
@@ -166,21 +163,22 @@ namespace Moments
                     // Keep list of all tags updated
                     foreach (string tag in entry.Tags)
                     {
-                        if (!allTags.ContainsKey(tag))
-                            allTags.Add(tag, 1);
+                        if (!_allTags.ContainsKey(tag))
+                            _allTags.Add(tag, 1);
                         else
-                            allTags[tag]++;
+                            _allTags[tag]++;
                     }
 
                     // Keep list of all entries updated
-                    if (!allEntries.ContainsKey(entry.Id))
-                        allEntries.Add(entry.Id, entry);
+                    if (!_allEntries.ContainsKey(entry.Id))
+                        _allEntries.Add(entry.Id, entry);
 
                     entriesLoadedCount++;
 
                     if (entriesLoadedCount % 100 == 0)
                         Console.WriteLine($"Loaded {entriesLoadedCount} entries...");
                 }
+
                 catch (Exception ex)
                 {
                     ignoredFiles.Add(entryFile, ex);
@@ -188,7 +186,6 @@ namespace Moments
             }
 
             Console.WriteLine($"Loaded total of {entriesLoadedCount} entries.");
-
 
             if (ignoredFiles.Count > 0)
             {
@@ -201,36 +198,23 @@ namespace Moments
             }
         }
 
-        private void updateLinksToEntries()
+        private void UpdateLinksToEntries()
         {
-            foreach (Entry entry in allEntries.Values)
+            foreach (Entry entry in _allEntries.Values)
             {
                 foreach (long linkedEntry in entry.LinksTo)
                 {
-                    if (allEntries.ContainsKey(linkedEntry))
+                    if (_allEntries.ContainsKey(linkedEntry))
                     {
-                        entry.LinksTo.Add(allEntries[linkedEntry].Id);
+                        entry.LinksTo.Add(_allEntries[linkedEntry].Id);
                         entry.LinksTo.Sort();
                     }
+
                     else
                         throw new ApplicationException($"Entry #{entry.Id} links to entry #{linkedEntry}, which doesn't exist.");
                 }
             }
         }
 
-        private string generatePathForEntry(Entry e)
-        {
-            int year = e.StartTimeComponents[0] ?? 9999;
-            int month = e.StartTimeComponents[1] ?? 1;
-            int day = e.StartTimeComponents[2] ?? 1;
-            int hour = e.StartTimeComponents[3] ?? 0;
-            int minute = e.StartTimeComponents[4] ?? 0;
-
-            string filename = $"{year:D4}{month:D2}{day:D2}-{hour:D2}{minute:D2}_{e.Id:D6}.json";
-            string dir = Path.Combine(year.ToString("D4"), month.ToString("D2"));
-            string path = Path.Combine(dir, filename);
-
-            return path;
-        }
     }
 }

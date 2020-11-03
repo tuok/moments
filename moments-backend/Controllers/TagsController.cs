@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
+using Moments.DTO;
 using Newtonsoft.Json;
 
 using Moments.Models;
@@ -16,34 +16,28 @@ namespace Moments.Controllers
     {
         public TagsController(IDatabase database) : base(database) {}
 
-        public string Get(string s, int? limit, bool? frequencies, string apiKey)
+        public string Get([FromBody] TagParams parameters)
         {
-            List<string> tags = new List<string>();
-            List<int> freqs = new List<int>();
-            Dictionary<string, int> retVals = new Dictionary<string, int>();
+            var searchTerm = parameters.SearchTerm?.ToLower();
+            var limit = parameters.Limit;
+            var freqs = parameters.Frequencies;
 
-            if (s != null)
+            var tagsFreqs = Database.TagsFrequencies.AsEnumerable();
+
+            if (searchTerm != null)
             {
-                if (limit.HasValue && Database.TagsFrequencies.Count >= limit)
-                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)).Take(limit.Value));
-                else
-                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Where(kvp => kvp.Key.Contains(s)));
+                tagsFreqs = tagsFreqs.Where(kvp => kvp.Key.Contains(searchTerm));
             }
 
-            // No search term provided, return all tags
-            else
+            if (limit.HasValue && Database.TagsFrequencies.Count >= limit)
             {
-                if (limit.HasValue && Database.TagsFrequencies.Count >= limit)
-                    retVals = new Dictionary<string, int>(Database.TagsFrequencies.Take(limit.Value));
-
-                else
-                    retVals = Database.TagsFrequencies;
+                tagsFreqs = tagsFreqs.Take(limit.Value);
             }
 
-            if (frequencies.HasValue && frequencies.Value)
-                return JsonConvert.SerializeObject(retVals);
-            else
-                return JsonConvert.SerializeObject(retVals.Keys);
+            if (freqs.HasValue && freqs.Value)
+                return JsonConvert.SerializeObject(tagsFreqs);
+
+            return JsonConvert.SerializeObject(tagsFreqs.Select(kvp => kvp.Key));
         }
     }
 }

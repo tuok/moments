@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
+using Moments.DTO;
 using Newtonsoft.Json;
 
 using Moments.Models;
@@ -18,26 +18,37 @@ namespace Moments.Controllers
         public EntriesController(IDatabase database) : base(database) {}
 
         // GET api/entries
-        public string Get(int? id, int? limit, int? begin, int? end)
+        public string Get([FromBody] EntryParams parameters)
         {
+            var id = parameters?.Id;
+            var searchTerm = parameters?.SearchTerm;
+            var begin = parameters?.Begin;
+            var end = parameters?.End;
+            var tags = parameters?.Tags;
+
+            var results = new List<Entry>();
+
+            // Get entry by id if provided.
             if (id.HasValue)
             {
-                Entry e = this.Database.GetEntry(id.Value);
+                Entry e = Database.GetEntry(id.Value);
 
-                return e == null ? "{}" : JsonConvert.SerializeObject(e);
+                if (e != null)
+                    results.Add(e);
             }
 
-            if (limit.HasValue && limit < this.Database.Entries.Count)
-            {
-                return JsonConvert.SerializeObject(
-                    this.Database.Entries.GetRange(
-                        this.Database.Entries.Count - limit.Value,
-                        limit.Value
-                    )
-                );
-            }
+            else
+                results = Database.Entries;
 
-            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < this.Database.Entries.Count)
+            // Filter entries by tags if provided.
+            if (tags != null && tags.Count > 0)
+                results = results.Where(e => tags.All(tag => e.Tags.Contains(tag))).ToList();
+
+            // Filter entries by search term if provided.
+            if (!string.IsNullOrEmpty(searchTerm))
+                results = results.Where(e => e.Text.ContainsIgnoreCase(searchTerm)).ToList();
+
+            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < Database.Entries.Count)
             {
                 int be = begin.Value;
                 int en = end.Value;
@@ -45,17 +56,15 @@ namespace Moments.Controllers
                 if (begin.Value < 1)
                     be = 1;
 
-                if (end.Value >= this.Database.Entries.Count)
-                    en = this.Database.Entries.Count;
+                if (end.Value >= Database.Entries.Count)
+                    en = Database.Entries.Count;
 
                 int range = en - be + 1;
 
-                return JsonConvert.SerializeObject(
-                    this.Database.Entries.GetRange(be - 1, range)
-                );
+                results = results.GetRange(be - 1, range);
             }
 
-            return JsonConvert.SerializeObject(this.Database.Entries);
+            return JsonConvert.SerializeObject(results);
         }
 
         [HttpPost]
