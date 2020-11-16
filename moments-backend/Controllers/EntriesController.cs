@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moments.DTO;
 using Newtonsoft.Json;
@@ -17,16 +16,26 @@ namespace Moments.Controllers
     {
         public EntriesController(IDatabase database) : base(database) {}
 
-        // GET api/entries
-        public string Get([FromBody] EntryParams parameters)
+        // POST api/entries/search
+        [HttpPost("search")]
+        public ActionResult Search([FromBody] EntryParams parameters)
         {
             var id = parameters?.Id;
             var searchTerm = parameters?.SearchTerm;
             var begin = parameters?.Begin;
             var end = parameters?.End;
+            var startDate = parameters?.StartDate;
+            var endDate = parameters?.EndDate;
             var tags = parameters?.Tags;
+            var reverse = parameters?.Reverse;
 
-            var results = new List<Entry>();
+            if (!begin.HasValue || !end.HasValue)
+            {
+                begin = 1;
+                end = 100;
+            }
+
+            var resultList = new List<Entry>();
 
             // Get entry by id if provided.
             if (id.HasValue)
@@ -34,21 +43,42 @@ namespace Moments.Controllers
                 Entry e = Database.GetEntry(id.Value);
 
                 if (e != null)
-                    results.Add(e);
+                    resultList.Add(e);
             }
 
             else
-                results = Database.Entries;
+                resultList = Database.Entries;
+
+            IEnumerable<Entry> results = resultList;
 
             // Filter entries by tags if provided.
             if (tags != null && tags.Count > 0)
-                results = results.Where(e => tags.All(tag => e.Tags.Contains(tag))).ToList();
+                results = results.Where(e => tags.All(tag => e.Tags.Contains(tag)));
 
             // Filter entries by search term if provided.
             if (!string.IsNullOrEmpty(searchTerm))
-                results = results.Where(e => e.Text.ContainsIgnoreCase(searchTerm)).ToList();
+                results = results.Where(e => e.Text.ContainsIgnoreCase(searchTerm));
 
-            if (begin.HasValue && end.HasValue && 1 <= begin.Value && begin.Value < Database.Entries.Count)
+            // Filter entries by dates if provided.
+            if (startDate.HasValue)
+            {
+                results = results.Where(e => startDate <= e.StartTime);
+            }
+
+            if (endDate.HasValue)
+            {
+                results = results.Where(e => e.StartTime < endDate);
+            }
+
+            resultList = results.ToList();
+            resultList.Sort();
+
+            if (!(reverse.HasValue && reverse.Value))
+            {
+                resultList.Reverse();
+            }
+
+            if (1 <= begin.Value && begin.Value < resultList.Count)
             {
                 int be = begin.Value;
                 int en = end.Value;
@@ -56,19 +86,19 @@ namespace Moments.Controllers
                 if (begin.Value < 1)
                     be = 1;
 
-                if (end.Value >= Database.Entries.Count)
-                    en = Database.Entries.Count;
+                if (end.Value >= resultList.Count)
+                    en = resultList.Count;
 
                 int range = en - be + 1;
 
-                results = results.GetRange(be - 1, range);
+                resultList = resultList.GetRange(be - 1, range);
             }
 
-            return JsonConvert.SerializeObject(results);
+            return Ok(resultList);
         }
 
         [HttpPost]
-        public Entry Post([FromBody]Entry entry)
+        public Entry AddEntry([FromBody]Entry entry)
         {
             return Database.AddEntry(entry);
         }

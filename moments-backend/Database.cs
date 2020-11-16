@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 using Moments.Interfaces;
 using Moments.Models;
@@ -21,7 +18,7 @@ namespace Moments
         private readonly SortedDictionary<long, Entry> _allEntries;
         private static long MaxId { set; get; }
 
-        public List<Entry> Entries { get; private set; }
+        public List<Entry> Entries => _allEntries.Values.ToList();
         public List<string> Tags => _allTags.Keys.ToList();
         public Dictionary<string, int> TagsFrequencies => new Dictionary<string, int>(_allTags);
 
@@ -55,13 +52,14 @@ namespace Moments
             if (_allEntries.ContainsKey(MaxId + 1))
                 throw new ApplicationException("Something went very wrong, id for new entry already exists.");
 
-            if (entry.StartTime >= entry.EndTime)
+            if (entry.EndTime.HasValue && entry.StartTime >= entry.EndTime)
                 throw new InvalidDataException("Entry start time must come before end time.");
 
             entry.Id = ++MaxId;
 
             _allEntries.Add(entry.Id, entry);
-            SortEntries();
+            entry.Tags.ForEach(AddOrUpdateTag);
+            UpdateLinksToEntries(entry);
 
             return SaveEntry(entry);
         }
@@ -86,7 +84,6 @@ namespace Moments
 
         public void RemoveEntry(Entry entry)
         {
-            this.SortEntries();
             throw new NotImplementedException();
         }
 
@@ -95,14 +92,7 @@ namespace Moments
             List<string> entryFileNames = GetEntryFiles().entryFiles;
             entryFileNames.Sort();
             ParseEntries(entryFileNames);
-            UpdateLinksToEntries();
-            SortEntries();
-        }
-
-        private void SortEntries()
-        {
-            Entries = _allEntries.Values.ToList();
-            Entries.Sort((e1, e2) => e1.CompareTo(e2));
+            UpdateLinksToEntriesAll();
         }
 
         private (List<string> entryFiles, List<string> ignoredFiles) GetEntryFiles()
@@ -136,6 +126,14 @@ namespace Moments
             return (entryFiles, ignoredFiles);
         }
 
+        private void AddOrUpdateTag(string tag)
+        {
+            if (!_allTags.ContainsKey(tag))
+                _allTags.Add(tag, 1);
+            else
+                _allTags[tag]++;
+        }
+
         private void ParseEntries(List<string> entryFiles)
         {
             Dictionary<string, Exception> ignoredFiles = new Dictionary<string, Exception>();
@@ -161,13 +159,7 @@ namespace Moments
                         MaxId = entry.Id;
 
                     // Keep list of all tags updated
-                    foreach (string tag in entry.Tags)
-                    {
-                        if (!_allTags.ContainsKey(tag))
-                            _allTags.Add(tag, 1);
-                        else
-                            _allTags[tag]++;
-                    }
+                    entry.Tags.ForEach(AddOrUpdateTag);
 
                     // Keep list of all entries updated
                     if (!_allEntries.ContainsKey(entry.Id))
@@ -192,29 +184,29 @@ namespace Moments
                 Console.WriteLine("Following files haven't been parsed because of exception:");
 
                 foreach (var ignoredFile in ignoredFiles)
-                {
                     Console.WriteLine($"{ignoredFile.Key} - {ignoredFile.Value.Message}");
-                }
             }
         }
 
-        private void UpdateLinksToEntries()
+        private void UpdateLinksToEntries(Entry entry)
         {
-            foreach (Entry entry in _allEntries.Values)
+            foreach (long linkedEntry in entry.LinksTo)
             {
-                foreach (long linkedEntry in entry.LinksTo)
+                if (_allEntries.ContainsKey(linkedEntry))
                 {
-                    if (_allEntries.ContainsKey(linkedEntry))
-                    {
-                        entry.LinksTo.Add(_allEntries[linkedEntry].Id);
-                        entry.LinksTo.Sort();
-                    }
-
-                    else
-                        throw new ApplicationException($"Entry #{entry.Id} links to entry #{linkedEntry}, which doesn't exist.");
+                    entry.LinksTo.Add(_allEntries[linkedEntry].Id);
+                    entry.LinksTo.Sort();
                 }
+
+                else
+                    throw new ApplicationException($"Entry #{entry.Id} links to entry #{linkedEntry}, which doesn't exist.");
             }
         }
 
+        private void UpdateLinksToEntriesAll()
+        {
+            foreach (var entry in _allEntries.Values)
+                UpdateLinksToEntries(entry);
+        }
     }
 }

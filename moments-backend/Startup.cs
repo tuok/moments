@@ -27,8 +27,7 @@ namespace Moments
                         builder
                         .AllowAnyOrigin() 
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                        .AllowAnyHeader();
                     });
             });
 

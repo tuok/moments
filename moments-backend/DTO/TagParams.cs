@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Moments.DTO
+﻿namespace Moments.DTO
 {
     public class TagParams
     {

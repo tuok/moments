@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moments.DTO;
 using Newtonsoft.Json;
 
-using Moments.Models;
 using Moments.Interfaces;
 
 namespace Moments.Controllers
@@ -16,7 +12,7 @@ namespace Moments.Controllers
     {
         public TagsController(IDatabase database) : base(database) {}
 
-        public string Get([FromBody] TagParams parameters)
+        public ActionResult Get([FromBody] TagParams parameters)
         {
             var searchTerm = parameters.SearchTerm?.ToLower();
             var limit = parameters.Limit;
@@ -35,9 +31,9 @@ namespace Moments.Controllers
             }
 
             if (freqs.HasValue && freqs.Value)
-                return JsonConvert.SerializeObject(tagsFreqs);
-
-            return JsonConvert.SerializeObject(tagsFreqs.Select(kvp => kvp.Key));
+                return Ok(tagsFreqs);
+            else
+                return Ok(tagsFreqs.Select(kvp => kvp.Key));
         }
     }
 }

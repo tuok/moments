@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Moments.DTO
 {
@@ -7,7 +8,10 @@ namespace Moments.DTO
         public int? Id { get; set; }
         public string SearchTerm { get; set; }
         public List<string> Tags { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int? Begin { get; set; }
         public int? End { get; set; }
+        public bool? Reverse { get; set; }
     }
 }

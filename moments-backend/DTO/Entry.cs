@@ -33,7 +33,7 @@ namespace Moments.Models
         [JsonProperty("private")]
         public bool Private { get; set; }
         [JsonProperty("start_time")]
-        public DateTime? StartTime { get; set; }
+        public DateTime StartTime { get; set; }
         [JsonProperty("end_time")]
         public DateTime? EndTime { get; set; }
         [JsonIgnore]
@@ -63,7 +63,7 @@ namespace Moments.Models
 
         public int CompareTo(object e)
         {
-            return StartTime.Value.CompareTo(((Entry)e).StartTime.Value);
+            return StartTime.CompareTo(((Entry)e).StartTime);
         }
 
         public string GetPath()
@@ -98,9 +98,9 @@ namespace Moments.Models
             {
                 var hourMinute = StartReadableTimestamp.Split(".");
                 var tempHour = Int32.Parse(hourMinute[0]);
-                var tempMinute = minute;
 
-                Int32.TryParse(hourMinute[1], out tempMinute);
+                if (!Int32.TryParse(hourMinute[1], out var tempMinute))
+                    tempMinute = 0;
 
                 return (tempHour, tempMinute);
             };
