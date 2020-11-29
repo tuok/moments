@@ -1,26 +1,27 @@
 import { MenuItem, Paper, Popper, TextField } from '@material-ui/core'
 import React, { useState } from 'react'
 
+import Tag from './Tag'
+
 export interface ITagAutoCompleteProps {
+    initialSelectedTags?: string[]
     tags: string[]
     frequencies: Record<string, number>
     maxResults: number
     threshold: number
-    onTagSelected: Function
-    deleteCallback?: Function
+    onTagsChanged: Function
 }
 
 const TagAutoComplete = (props: ITagAutoCompleteProps) => {
-    const { tags, maxResults, frequencies, onTagSelected, threshold, deleteCallback } = props
+    const { initialSelectedTags, tags, maxResults, frequencies, onTagsChanged, threshold } = props
 
     const [foundTags, setFoundTags] = useState<string[]>([])
+    const [selectedTags, setSelectedTags] = useState<string[]>(initialSelectedTags ?? [])
     const [searchTerm, setSearchTerm] = useState<string>('')
     const [anchorElement, setAnchorElement] = useState<any>(null)
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
 
     const defaultIndex = 0
-
-    console.log('Render')
 
     const handleSearchTermChange = async (target: any, term: string) => {
         const lowerTerm = term.toLowerCase()
@@ -80,7 +81,7 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
         } else if (e.key === 'Enter') {
             if (foundTags.length > 0 && selectedIndex >= 0) {
                 tagSelected(foundTags[selectedIndex])
-            } else {
+            } else if (searchTerm.length > 0) {
                 tagSelected(searchTerm)
             }
         } else if (e.key === 'Escape' && foundTags.length > 0) {
@@ -98,14 +99,32 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
             else {
                 resetComponent()
             }
-        } else if (e.key === 'Delete' && deleteCallback && searchTerm.length < 1) {
-            deleteCallback()
+        } else if (e.key === 'Delete' && searchTerm.length < 1) {
+            if (selectedTags.length > 0) {
+                const tagToRemove = selectedTags[selectedTags.length - 1]
+                removeTag(tagToRemove)
+            }
         }
     }
 
     const tagSelected = (tag: string) => {
+        if (!selectedTags.includes(tag)) {
+            const newSelectedTags = [...selectedTags, tag]
+
+            setSelectedTags(newSelectedTags)
+            onTagsChanged(newSelectedTags)
+        }
+
         resetComponent()
-        onTagSelected(tag)
+    }
+
+    const removeTag = (tagToRemove: string) => {
+        if (selectedTags.includes(tagToRemove)) {
+            const newSelectedTags = selectedTags.filter(tag => tag !== tagToRemove)
+
+            setSelectedTags(newSelectedTags)
+            onTagsChanged(newSelectedTags)
+        }
     }
 
     const tagItems = foundTags.map((tag, i) => {
@@ -122,7 +141,7 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
                 fullWidth
                 style={{ marginTop: 0 }}
                 margin="normal"
-                label="Hae tägejä kirjoittamalla (delete poistaa viimeisimmän valitun tägin)"
+                label="Tägihaku"
                 onChange={e => handleSearchTermChange(e.currentTarget, e.target.value)}
                 onKeyDown={handleKeyPress}
                 value={searchTerm}
@@ -130,6 +149,9 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
             <Popper open={Boolean(anchorElement)} anchorEl={anchorElement} placement="bottom-start" style={{ zIndex: 1000000 }}>
                 <Paper>{tagItems}</Paper>
             </Popper>
+            {selectedTags.map(tag => (
+                <Tag key={tag} label={tag} handleDelete={removeTag} />
+            ))}
         </>
     )
 }

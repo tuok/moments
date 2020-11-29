@@ -56,7 +56,7 @@ namespace Moments.Models
             Text = text;
             Private = privateEntry;
             Tags = tags;
-            LinksTo = linksTo == null ? new List<long>() : linksTo;
+            LinksTo = linksTo ?? new List<long>();
             StartTime = startTime;
             EndTime = endTime;
         }
@@ -78,7 +78,7 @@ namespace Moments.Models
             {
                 var monthYear = StartReadableTimestamp
                     .Split("/")
-                    .Select(token => Int32.Parse(token))
+                    .Select(Int32.Parse)
                     .ToArray();
 
                 return (monthYear[0], monthYear[1]);

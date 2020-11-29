@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Moments.DTO;
-using Newtonsoft.Json;
 
 using Moments.Models;
 using Moments.Interfaces;
-
 
 namespace Moments.Controllers
 {
@@ -32,7 +29,7 @@ namespace Moments.Controllers
             if (!begin.HasValue || !end.HasValue)
             {
                 begin = 1;
-                end = 100;
+                end = 20;
             }
 
             var resultList = new List<Entry>();
@@ -98,26 +95,27 @@ namespace Moments.Controllers
         }
 
         [HttpPost]
-        public Entry AddEntry([FromBody]Entry entry)
+        public ActionResult AddOrUpdateEntry([FromBody] Entry entry)
         {
-            return Database.AddEntry(entry);
+            Database.AddOrUpdateEntry(entry);
+
+            return Ok("Ok!");
         }
 
-        [HttpGet("saveall")]
-        public string SaveAll()
+        [HttpDelete]
+        public ActionResult RemoveEntry([FromBody] Entry entry)
         {
-            try
-            {
-                foreach (var entry in Database.Entries)
-                    Database.SaveEntry(entry);
-            }
-            catch (Exception e)
-            {
-                return JsonConvert.SerializeObject(new { result = "error", message = e.Message });
-            }
+            Database.RemoveEntry(entry);
 
-            return JsonConvert.SerializeObject(new { result = "ok", message = "All entries saved successfully to disk." });
+            return Ok("Ok!");
+        }
 
+        [HttpGet("init")]
+        public ActionResult ReloadEntries()
+        {
+            Database.LoadData();
+
+            return Ok("Ok!");
         }
     }
 }

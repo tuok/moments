@@ -2,12 +2,16 @@ import React from 'react'
 
 // Year: ^ 4 numbers $
 const yearRE = new RegExp(/^\d{4}$/)
+
 // Month/year: ^1-2 numbers '/' 4 numbers
 const yearMonthRE = new RegExp(/^(\d){1,2}\/[12]{1}\d{3}$/)
+
 // ^1-2 numbers '.' 1-2 numbers '.' 4 numbers
 const dateRE = new RegExp(/^(\d){1,2}\.(\d){1,2}\.(\d){4}/)
+
 // 1-2 numbers ':xx' $
 const hourRE = new RegExp(/(\d){1,2}:xx$/)
+
 // 1-2 numbers ':' 2 numbers $
 const hourMinuteRE = new RegExp(/(\d){1,2}:(\d){2}$/)
 
@@ -72,6 +76,11 @@ export const parseStringDate = (dateStr: string): Date | undefined => {
 
         return undefined
     } else if (dateRE.test(t)) {
+        // Check year length
+        if (tokens[2].length > 4) {
+            return undefined
+        }
+
         let day = parseInt(tokens[0], 10)
         let month = parseInt(tokens[1], 10)
         let year = parseInt(tokens[2], 10)
@@ -103,4 +112,36 @@ export const parseStringDate = (dateStr: string): Date | undefined => {
     }
 
     return undefined
+}
+
+export enum DateType {
+    BeginDate,
+    EndDate,
+}
+
+export const handleDateChangeGeneral = (
+    type: DateType,
+    dateStr: string,
+    beginDateKey: string,
+    endDateKey: string,
+    setBeginDateError: Function,
+    setEndDateError: Function
+) => {
+    const stateFunc = type === DateType.BeginDate ? setBeginDateError : setEndDateError
+    const beginEnd = type === DateType.BeginDate ? beginDateKey : endDateKey
+
+    if (dateStr.length < 1) {
+        stateFunc(false)
+        return [beginEnd, null]
+    }
+
+    const parsedDate = parseStringDate(dateStr)
+
+    if (parsedDate) {
+        stateFunc(false)
+        return [beginEnd, parsedDate]
+    } else {
+        stateFunc(true)
+        return null
+    }
 }

@@ -10,8 +10,8 @@ namespace Moments.Interfaces
         List<string> Tags { get; }
         Dictionary<string, int> TagsFrequencies { get; }
         Entry GetEntry(long id);
-        Entry AddEntry(Entry entry);
-        Entry SaveEntry(Entry entry);
+        void AddOrUpdateEntry(Entry entry);
+        void RemoveEntry(Entry entry);
         void LoadData();
     }
 }

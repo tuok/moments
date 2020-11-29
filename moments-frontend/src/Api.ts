@@ -1,9 +1,9 @@
-import { ISearchData } from "./Models"
+import { IEntry, ISearchData } from './Models'
 
 class Api {
     private static headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
     }
 
     private static apiCall = (path: string, method: string, data: object, callback: Function) => {
@@ -13,12 +13,19 @@ class Api {
     }
 
     public static getEntries = (searchData: ISearchData, callback: Function) => {
-        console.info('Fetching entries with following criteria:', searchData)
         Api.apiCall('/api/entries/search', 'POST', searchData, callback)
     }
 
     public static getTags = (frequencies: boolean, callback: Function) => {
         Api.apiCall('/api/tags', 'POST', { frequencies }, callback)
+    }
+
+    public static saveEntry = (entry: IEntry, callback: Function) => {
+        Api.apiCall('/api/entries', 'POST', entry, callback)
+    }
+
+    public static removeEntry = (entry: IEntry, callback: Function) => {
+        Api.apiCall('/api/entries', 'DELETE', entry, callback)
     }
 }
 

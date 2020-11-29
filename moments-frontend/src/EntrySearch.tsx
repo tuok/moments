@@ -1,19 +1,13 @@
 import { Paper, TextField, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { ISearchData, defaultSearchData } from './Models'
-import Tag from './Tag'
 
 import TagAutoComplete from './TagAutoComplete'
-import { parseStringDate } from './Utils'
+import { DateType, handleDateChangeGeneral } from './Utils'
 
 export interface IEntrySearchProps {
     tagsFrequencies: Record<string, number>
     searchDataUpdatedCallback: Function
-}
-
-enum DateType {
-    BeginDate,
-    EndDate,
 }
 
 const EntrySeach = (props: IEntrySearchProps) => {
@@ -33,54 +27,23 @@ const EntrySeach = (props: IEntrySearchProps) => {
         setSearchData(newSearchData)
     }
 
-    const handleTagSelected = (newTag: string) => {
-        if (!searchData.tags?.includes(newTag)) {
-            const newSearchData = { ...searchData, tags: [...searchData.tags!, newTag] }
+    const handleTagsChanged = (newTags: string[]) => {
+        const newSearchData = { ...searchData, tags: newTags }
 
-            searchDataUpdatedCallback(newSearchData)
-            setSearchData(newSearchData)
-        }
-    }
-
-    const handleRemoveLastTag = () => {
-        if (searchData.tags && searchData.tags.length > 0) {
-            const tagToRemove = searchData.tags[searchData.tags.length - 1]
-            removeTag(tagToRemove)
-        }
-    }
-
-    const removeTag = (tagToRemove: string) => {
-        if (searchData.tags?.includes(tagToRemove)) {
-            const newSearchData = { ...searchData, tags: searchData.tags!.filter(tag => tag !== tagToRemove) }
-
-            searchDataUpdatedCallback(newSearchData)
-            setSearchData(newSearchData)
-        }
+        searchDataUpdatedCallback(newSearchData)
+        setSearchData(newSearchData)
     }
 
     const handleDateChange = (type: DateType, dateStr: string) => {
-        const stateFunc = type === DateType.BeginDate ? setStartDateError : setEndDateError
-        const beginEnd = type === DateType.BeginDate ? 'startDate' : 'endDate'
+        const result = handleDateChangeGeneral(type, dateStr, 'startDate', 'endDate', setStartDateError, setEndDateError)
 
-        if (dateStr.length < 1) {
-            stateFunc(false)
-            const newSearchData = { ...searchData, [beginEnd]: null }
+        if (result) {
+            const [key_, value] = result
+            const key = key_ as string
+            const newSearchData = { ...searchData, [key]: value }
+
             setSearchData(newSearchData)
             searchDataUpdatedCallback(newSearchData)
-            return
-        }
-
-        const parsedDate = parseStringDate(dateStr)
-
-        if (parsedDate) {
-            console.log('Parsed date:', parsedDate)
-            const newSearchData = { ...searchData, [beginEnd]: parsedDate }
-
-            stateFunc(false)
-            setSearchData(newSearchData)
-            searchDataUpdatedCallback(newSearchData)
-        } else {
-            stateFunc(true)
         }
     }
 
@@ -92,32 +55,27 @@ const EntrySeach = (props: IEntrySearchProps) => {
     }
 
     return (
-        <Paper style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 10, paddingBottom: 10, marginLeft: 10, marginRight: 10 }}>
-            <TagAutoComplete
-                tags={tags}
-                frequencies={tagsFrequencies}
-                maxResults={6}
-                onTagSelected={handleTagSelected}
-                threshold={1}
-                deleteCallback={handleRemoveLastTag}
-            />
-            {searchData.tags ? searchData.tags.map(tag => <Tag key={tag} label={tag} handleDelete={removeTag} />) : null}
+        <Paper style={{ paddingTop: 5, paddingLeft: 15, paddingRight: 15, paddingBottom: 10, marginLeft: 10, marginRight: 10 }}>
+            <Typography variant="h5" style={{ marginLeft: 5, marginTop: 5, fontWeight: 600 }}>
+                Haku
+            </Typography>
+            <TagAutoComplete tags={tags} frequencies={tagsFrequencies} maxResults={6} onTagsChanged={handleTagsChanged} threshold={1} />
             <TextField
-                label="Hae kirjauksia merkkijonon perusteella (full-text search)"
+                label="Tekstihaku"
                 onChange={e => handleFullTextSearchTermChange(e.target.value)}
                 fullWidth
                 style={{ marginTop: 5 }}
             />
             <TextField
                 error={startDateError}
-                label="Hae kirjauksia jälkeen ajanhetken"
+                label="Jälkeen ajanhetken"
                 onChange={e => handleDateChange(DateType.BeginDate, e.target.value)}
                 fullWidth
                 style={{ marginTop: 5 }}
             />
             <TextField
                 error={endDateError}
-                label="Hae kirjauksia ennen ajanhetkeä"
+                label="Ennen ajanhetkeä"
                 onChange={e => handleDateChange(DateType.EndDate, e.target.value)}
                 fullWidth
                 style={{ marginTop: 5 }}
@@ -127,9 +85,9 @@ const EntrySeach = (props: IEntrySearchProps) => {
                     type="checkbox"
                     checked={searchData.reverse}
                     onChange={handleReverseChange}
-                    style={{ marginLeft: 2, marginTop: 20 }}
+                    style={{ marginLeft: 2, marginRight: 10, marginTop: 20 }}
                 />
-                &nbsp;&nbsp;Järjestä vanhimmasta uusimpaan
+                Järjestä vanhimmasta uusimpaan
             </label>
         </Paper>
     )

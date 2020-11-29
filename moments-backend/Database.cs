@@ -38,6 +38,12 @@ namespace Moments
                 throw new IOException($"Specified path {path} doesn't exist. Cannot load entries.");
         }
 
+        private void ValidateEntry(Entry entry)
+        {
+            if (entry.EndTime.HasValue && entry.StartTime >= entry.EndTime)
+                throw new InvalidDataException("Entry start time must come before end time.");
+        }
+
         public Entry GetEntry(long id)
         {
             if (!_allEntries.ContainsKey(id))
@@ -46,51 +52,97 @@ namespace Moments
             return _allEntries[id];
         }
 
-        // Adds new entry in memory, but doesn't save it.
-        public Entry AddEntry(Entry entry)
+        public void AddOrUpdateEntry(Entry entry)
         {
-            if (_allEntries.ContainsKey(MaxId + 1))
-                throw new ApplicationException("Something went very wrong, id for new entry already exists.");
+            if (_allEntries.ContainsKey(entry.Id))
+                ModifyEntry(entry);
+            else
+                AddEntry(entry);
+        }
+        
+        private void AddEntry(Entry entry)
+        {
+            ValidateEntry(entry);
 
-            if (entry.EndTime.HasValue && entry.StartTime >= entry.EndTime)
-                throw new InvalidDataException("Entry start time must come before end time.");
+            while (_allEntries.ContainsKey(MaxId))
+                MaxId++;
 
-            entry.Id = ++MaxId;
-
+            entry.Id = MaxId;
             _allEntries.Add(entry.Id, entry);
-            entry.Tags.ForEach(AddOrUpdateTag);
+            entry.Tags.ForEach(AddTag);
+            
             UpdateLinksToEntries(entry);
-
-            return SaveEntry(entry);
+            SaveEntry(entry);
         }
 
-        // Method saves given entry. If Entry object doesn't have Path property assigned, new file
-        // will be created. Otherwise existing path will be overwritten.
-        public Entry SaveEntry(Entry entry)
+        private void ModifyEntry(Entry entry)
         {
-            // New entries do not have Path assigned, it must be generated
-            if (entry.Path == null)
-            {
-                entry.Path = Path.Combine(_path, entry.GetPath());
-                Directory.CreateDirectory(Path.GetDirectoryName(entry.Path));
-            }
+            if (!_allEntries.ContainsKey(entry.Id))
+                throw new ApplicationException("Could not found entry with id " + entry.Id);
+
+            ValidateEntry(entry);
+
+            var oldEntry = _allEntries[entry.Id];
+
+            // Update tag information
+            oldEntry.Tags
+                .Where(oldTag => !entry.Tags.Contains(oldTag))
+                .ToList()
+                .ForEach(RemoveTag);
+
+            entry.Tags
+                .Where(newTag => !oldEntry.Tags.Contains(newTag))
+                .ToList()
+                .ForEach(AddTag);
+
+            entry.Path = oldEntry.Path;
+            entry.Private = oldEntry.Private;
+
+            _allEntries[entry.Id] = entry;
+
+            SaveEntry(oldEntry);
+        }
+ 
+        // Method saves given entry to file. If there's existing file for the given entry, it shall be deleted.
+        public void SaveEntry(Entry entry)
+        {
+            // If (old) entry file exists, delete it.
+            if (!String.IsNullOrEmpty(entry.Path))
+                File.Delete(entry.Path);
+
+            entry.Path = Path.Combine(_path, entry.GetPath());
+            Directory.CreateDirectory(Path.GetDirectoryName(entry.Path));
 
             string content = JsonConvert.SerializeObject(entry, Formatting.Indented);
-            File.WriteAllText(entry.Path, content);
+             File.WriteAllText(entry.Path, content);
             Console.WriteLine($"Entry #{entry.Id} was saved successfully in {entry.Path}");
-
-            return entry;
         }
 
         public void RemoveEntry(Entry entry)
         {
-            throw new NotImplementedException();
+            var id = entry.Id;
+            
+            if (!_allEntries.ContainsKey(id))
+                throw new ApplicationException("Could not found entry with id " + id);
+
+            var oldEntry = _allEntries[id];
+            
+            if (!String.IsNullOrEmpty(oldEntry.Path))
+                File.Delete(oldEntry.Path);
+
+            // Remove tag information related to this entry.
+            oldEntry.Tags.ForEach(RemoveTag);
+            _allEntries.Remove(id);
         }
 
         public void LoadData()
         {
             List<string> entryFileNames = GetEntryFiles().entryFiles;
             entryFileNames.Sort();
+
+            _allEntries.Clear();
+            _allTags.Clear();
+            
             ParseEntries(entryFileNames);
             UpdateLinksToEntriesAll();
         }
@@ -126,12 +178,23 @@ namespace Moments
             return (entryFiles, ignoredFiles);
         }
 
-        private void AddOrUpdateTag(string tag)
+        private void AddTag(string tag)
         {
             if (!_allTags.ContainsKey(tag))
                 _allTags.Add(tag, 1);
             else
                 _allTags[tag]++;
+        }
+
+        private void RemoveTag(string tag)
+        {
+            if (_allTags.ContainsKey(tag))
+            {
+                if (_allTags[tag] > 1)
+                    _allTags[tag]--;
+                else
+                    _allTags.Remove(tag);
+            }
         }
 
         private void ParseEntries(List<string> entryFiles)
@@ -159,7 +222,7 @@ namespace Moments
                         MaxId = entry.Id;
 
                     // Keep list of all tags updated
-                    entry.Tags.ForEach(AddOrUpdateTag);
+                    entry.Tags.ForEach(AddTag);
 
                     // Keep list of all entries updated
                     if (!_allEntries.ContainsKey(entry.Id))
