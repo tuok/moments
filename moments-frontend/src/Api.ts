@@ -7,7 +7,7 @@ class Api {
     }
 
     private static apiCall = (path: string, method: string, data: object, callback: Function) => {
-        fetch(`http://localhost:5000${path}`, { headers: Api.headers, method, body: JSON.stringify(data) })
+        fetch(`http://localhost:80${path}`, { headers: Api.headers, method, body: JSON.stringify(data) })
             .then(resp => resp.json())
             .then(json => callback(json))
     }
