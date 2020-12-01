@@ -10,7 +10,7 @@ namespace Moments.Models
     {
         private static Regex yRegex = new Regex(@"^\d{4}$", RegexOptions.Compiled);
         private static Regex myRegex = new Regex(@"^\d{1,2}\/\d{4}$", RegexOptions.Compiled);
-        private static Regex dmyRegex = new Regex(@"^\d{1,2}\.\d{1,2}\.\d{4}", RegexOptions.Compiled);
+        private static Regex dmyRegex = new Regex(@"^\d{1,2}\.\d{1,2}\.\d{4}$", RegexOptions.Compiled);
         private static Regex dmyhRegex = new Regex(@"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:xx$", RegexOptions.Compiled);
         private static Regex dmyhmRegex = new Regex(@"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:\d{1,2}$", RegexOptions.Compiled);
 
@@ -76,7 +76,7 @@ namespace Moments.Models
 
             Func<string, (int, int)> myParse = str =>
             {
-                var monthYear = StartReadableTimestamp
+                var monthYear = str
                     .Split("/")
                     .Select(Int32.Parse)
                     .ToArray();
@@ -86,7 +86,7 @@ namespace Moments.Models
 
             Func<string, (int, int, int)> dmyParse = str =>
             {
-                var dayMonthYear = StartReadableTimestamp
+                var dayMonthYear = str
                     .Split(".")
                     .Select(Int32.Parse)
                     .ToArray();
@@ -96,7 +96,7 @@ namespace Moments.Models
 
             Func<string, (int, int)> hmParse = str =>
             {
-                var hourMinute = StartReadableTimestamp.Split(".");
+                var hourMinute = str.Split(":");
                 var tempHour = Int32.Parse(hourMinute[0]);
 
                 if (!Int32.TryParse(hourMinute[1], out var tempMinute))

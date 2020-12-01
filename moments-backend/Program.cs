@@ -23,7 +23,7 @@ namespace Moments
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(options => {
-                    options.Listen(IPAddress.Parse("0.0.0.0"), 5000);
+                    options.Listen(IPAddress.Parse("0.0.0.0"), 80);
                 })
                 .UseStartup<Startup>()
                 .Build();
