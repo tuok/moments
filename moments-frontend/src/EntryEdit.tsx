@@ -25,6 +25,7 @@ const EntryEdit = (props: IEntryEditProps) => {
     const [modifiedEntry, setModifiedEntry] = useState(entry)
     const [startDateError, setStartDateError] = useState<boolean>(false)
     const [endDateError, setEndDateError] = useState<boolean>(false)
+    const [cancelClickCount, setCancelClickCount] = useState(0)
 
     const newEntry = entry.id === -1
 
@@ -103,7 +104,14 @@ const EntryEdit = (props: IEntryEditProps) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={e => handleClose()}>Peruuta</Button>
+                <Button
+                    onClick={e => {
+                        if (cancelClickCount === 2) handleClose()
+                        else setCancelClickCount(prevCount => prevCount + 1)
+                    }}
+                >
+                    Peruuta
+                </Button>
 
                 <Button
                     onClick={e =>
