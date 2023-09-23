@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
-import { Card, CardContent, Divider, IconButton, Menu, MenuItem, Typography } from '@material-ui/core'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
+import {
+    Card,
+    CardContent,
+    Divider,
+    IconButton,
+    Menu,
+    MenuItem,
+    Typography,
+} from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 
 import { IEntry } from './Models'
 import Tag from './Tag'
@@ -19,6 +27,7 @@ interface IEntryProps {
 const Entry = (props: IEntryProps) => {
     const { entry, entryEditCallback, searchPattern, deleteCallback } = props
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [menuAnchorElement, setMenuAnchorElement] = useState<any>(null)
     const menuOpen = Boolean(menuAnchorElement)
 
@@ -35,16 +44,28 @@ const Entry = (props: IEntryProps) => {
 
         if (entry.end_readable_timestamp) {
             // Check if both timestamps have time defined (hh:mm / hh:xx)
-            if (formattedTime.indexOf(':') > 0 && entry.end_readable_timestamp.indexOf(':') > 0) {
+            if (
+                formattedTime.indexOf(':') > 0 &&
+                entry.end_readable_timestamp.indexOf(':') > 0
+            ) {
                 // dd.MM.yyyy|hh:mm, where | marks place of sep(arator)
                 const sep = formattedTime.length - 6
-                const startTimeHead = entry.start_readable_timestamp.substring(0, sep - 1)
-                const endTimeHead = entry.end_readable_timestamp.substring(0, sep - 1)
+                const startTimeHead = entry.start_readable_timestamp.substring(
+                    0,
+                    sep - 1
+                )
+                const endTimeHead = entry.end_readable_timestamp.substring(
+                    0,
+                    sep - 1
+                )
 
                 // end could be:
                 // hh:mm, if start & end dates are the same
                 // dd.MM.yyyy, if start & end dates differ
-                const end = startTimeHead === endTimeHead ? entry.end_readable_timestamp.substring(sep) : entry.end_readable_timestamp
+                const end =
+                    startTimeHead === endTimeHead
+                        ? entry.end_readable_timestamp.substring(sep)
+                        : entry.end_readable_timestamp
 
                 formattedTime = `${formattedTime} - ${end}`
             } else {
@@ -67,14 +88,25 @@ const Entry = (props: IEntryProps) => {
             <CardContent>
                 <div>
                     {entry.title !== null ? (
-                        <Typography variant="h5" style={{ marginBottom: 0, display: 'inline-block' }}>
+                        <Typography
+                            variant="h5"
+                            style={{ marginBottom: 0, display: 'inline-block' }}
+                        >
                             {entry.title}
                         </Typography>
                     ) : null}
-                    <IconButton onClick={handleEntryMenuClick} style={{ float: 'right' }}>
+                    <IconButton
+                        onClick={handleEntryMenuClick}
+                        style={{ float: 'right' }}
+                    >
                         <MoreVertIcon />
                     </IconButton>
-                    <Menu open={menuOpen} anchorEl={menuAnchorElement} keepMounted onClose={handleMenuClose}>
+                    <Menu
+                        open={menuOpen}
+                        anchorEl={menuAnchorElement}
+                        keepMounted
+                        onClose={handleMenuClose}
+                    >
                         <MenuItem
                             onClick={() => {
                                 handleMenuClose()
@@ -98,11 +130,13 @@ const Entry = (props: IEntryProps) => {
                     {formatEntryTime()}
                 </Typography>
                 <Divider style={{ marginTop: 10 }} />
-                <Typography style={{ marginTop: 15, whiteSpace: 'pre-line' }}>{textToBoldComponents(entry.text, searchPattern)}</Typography>
+                <Typography style={{ marginTop: 15, whiteSpace: 'pre-line' }}>
+                    {textToBoldComponents(entry.text, searchPattern)}
+                </Typography>
                 <Typography variant="h6" style={{ marginTop: 20 }}>
                     Tägit
                 </Typography>
-                {entry.tags.map(tag => (
+                {entry.tags.map((tag) => (
                     <Tag key={tag} label={tag} />
                 ))}
             </CardContent>

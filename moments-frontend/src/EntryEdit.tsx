@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import { TextField, Button } from '@material-ui/core'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import { TextField, Button } from '@mui/material'
 
 import TagAutoComplete from './TagAutoComplete'
 import { IEntry } from './Models'
@@ -30,13 +30,20 @@ const EntryEdit = (props: IEntryEditProps) => {
     const newEntry = entry.id === -1
 
     const handleDateChange = (type: DateType, dateStr: string) => {
-        const result = handleDateChangeGeneral(type, dateStr, 'start_time', 'end_time', setStartDateError, setEndDateError)
+        const result = handleDateChangeGeneral(
+            type,
+            dateStr,
+            'start_time',
+            'end_time',
+            setStartDateError,
+            setEndDateError
+        )
 
         if (result) {
             const [key_, value] = result
             const key = key_ as string
 
-            setModifiedEntry(prevEntry => {
+            setModifiedEntry((prevEntry) => {
                 const tempEntry = { ...prevEntry, [key]: value }
 
                 if (type === DateType.BeginDate) {
@@ -51,8 +58,15 @@ const EntryEdit = (props: IEntryEditProps) => {
     }
 
     return (
-        <Dialog open={true} onClose={e => handleClose()} disableBackdropClick={true} disableEscapeKeyDown={true}>
-            <DialogTitle>{newEntry ? 'Uusi kirjaus' : 'Kirjauksen muokkaus'}</DialogTitle>
+        <Dialog
+            open={true}
+            onClose={(e) => handleClose()}
+            // disableBackdropClick={true}
+            disableEscapeKeyDown={true}
+        >
+            <DialogTitle>
+                {newEntry ? 'Uusi kirjaus' : 'Kirjauksen muokkaus'}
+            </DialogTitle>
             <DialogContent>
                 <TextField
                     required
@@ -62,18 +76,28 @@ const EntryEdit = (props: IEntryEditProps) => {
                     id="title"
                     label="Kirjauksen otsikko"
                     defaultValue={modifiedEntry.title}
-                    onBlur={e => setModifiedEntry((prevEntry: IEntry) => ({ ...prevEntry, title: e.target.value }))}
+                    onBlur={(e) =>
+                        setModifiedEntry((prevEntry: IEntry) => ({
+                            ...prevEntry,
+                            title: e.target.value,
+                        }))
+                    }
                 />
                 <TextField
                     required
                     fullWidth
                     multiline
-                    rowsMax="20"
+                    // rowsMax="20"
                     margin="normal"
                     id="text"
                     label="Kirjauksen teksti"
                     defaultValue={modifiedEntry.text}
-                    onBlur={e => setModifiedEntry((prevEntry: IEntry) => ({ ...prevEntry, text: e.target.value }))}
+                    onBlur={(e) =>
+                        setModifiedEntry((prevEntry: IEntry) => ({
+                            ...prevEntry,
+                            text: e.target.value,
+                        }))
+                    }
                 />
                 <TagAutoComplete
                     initialSelectedTags={modifiedEntry.tags}
@@ -81,7 +105,12 @@ const EntryEdit = (props: IEntryEditProps) => {
                     frequencies={frequencies}
                     threshold={2}
                     maxResults={6}
-                    onTagsChanged={(tags: string[]) => setModifiedEntry((prevEntry: IEntry) => ({ ...prevEntry, tags: tags }))}
+                    onTagsChanged={(tags: string[]) =>
+                        setModifiedEntry((prevEntry: IEntry) => ({
+                            ...prevEntry,
+                            tags: tags,
+                        }))
+                    }
                 />
                 <TextField
                     error={startDateError}
@@ -91,7 +120,9 @@ const EntryEdit = (props: IEntryEditProps) => {
                     id="startTimestamp"
                     label="Alkuajankohta"
                     defaultValue={modifiedEntry.start_readable_timestamp}
-                    onChange={e => handleDateChange(DateType.BeginDate, e.target.value)}
+                    onChange={(e) =>
+                        handleDateChange(DateType.BeginDate, e.target.value)
+                    }
                 />
                 <TextField
                     error={endDateError}
@@ -100,24 +131,30 @@ const EntryEdit = (props: IEntryEditProps) => {
                     id="endTimestamp"
                     label="Loppuajankohta"
                     defaultValue={modifiedEntry.end_readable_timestamp}
-                    onChange={e => handleDateChange(DateType.EndDate, e.target.value)}
+                    onChange={(e) =>
+                        handleDateChange(DateType.EndDate, e.target.value)
+                    }
                 />
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={e => {
+                    onClick={(e) => {
                         if (cancelClickCount === 2) handleClose()
-                        else setCancelClickCount(prevCount => prevCount + 1)
+                        else setCancelClickCount((prevCount) => prevCount + 1)
                     }}
                 >
                     Peruuta
                 </Button>
 
                 <Button
-                    onClick={e =>
+                    onClick={(e) =>
                         Api.saveEntry(modifiedEntry, () => {
-                            const removedTags = entry.tags.filter(tag => !modifiedEntry.tags.includes(tag))
-                            const addedTags = modifiedEntry.tags.filter(tag => !entry.tags.includes(tag))
+                            const removedTags = entry.tags.filter(
+                                (tag) => !modifiedEntry.tags.includes(tag)
+                            )
+                            const addedTags = modifiedEntry.tags.filter(
+                                (tag) => !entry.tags.includes(tag)
+                            )
 
                             console.info('Entry modified successfully!')
 

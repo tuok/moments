@@ -1,4 +1,5 @@
-import { MenuItem, Paper, Popper, TextField } from '@material-ui/core'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MenuItem, Paper, Popper, TextField } from '@mui/material'
 import React, { useState } from 'react'
 
 import Tag from './Tag'
@@ -13,10 +14,19 @@ export interface ITagAutoCompleteProps {
 }
 
 const TagAutoComplete = (props: ITagAutoCompleteProps) => {
-    const { initialSelectedTags, tags, maxResults, frequencies, onTagsChanged, threshold } = props
+    const {
+        initialSelectedTags,
+        tags,
+        maxResults,
+        frequencies,
+        onTagsChanged,
+        threshold,
+    } = props
 
     const [foundTags, setFoundTags] = useState<string[]>([])
-    const [selectedTags, setSelectedTags] = useState<string[]>(initialSelectedTags ?? [])
+    const [selectedTags, setSelectedTags] = useState<string[]>(
+        initialSelectedTags ?? []
+    )
     const [searchTerm, setSearchTerm] = useState<string>('')
     const [anchorElement, setAnchorElement] = useState<any>(null)
     const [selectedIndex, setSelectedIndex] = useState<number>(0)
@@ -32,7 +42,7 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
             return
         }
 
-        let foundTags_ = tags.filter(tag => tag.includes(lowerTerm))
+        let foundTags_ = tags.filter((tag) => tag.includes(lowerTerm))
 
         foundTags_.sort((tag1, tag2) => {
             let i1 = tag1.indexOf(lowerTerm)
@@ -120,7 +130,9 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
 
     const removeTag = (tagToRemove: string) => {
         if (selectedTags.includes(tagToRemove)) {
-            const newSelectedTags = selectedTags.filter(tag => tag !== tagToRemove)
+            const newSelectedTags = selectedTags.filter(
+                (tag) => tag !== tagToRemove
+            )
 
             setSelectedTags(newSelectedTags)
             onTagsChanged(newSelectedTags)
@@ -129,7 +141,12 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
 
     const tagItems = foundTags.map((tag, i) => {
         return (
-            <MenuItem key={tag} onClick={e => tagSelected(tag)} onKeyDown={handleKeyPress} selected={i === selectedIndex}>
+            <MenuItem
+                key={tag}
+                onClick={(e) => tagSelected(tag)}
+                onKeyDown={handleKeyPress}
+                selected={i === selectedIndex}
+            >
                 {tag}
             </MenuItem>
         )
@@ -142,14 +159,21 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
                 style={{ marginTop: 0 }}
                 margin="normal"
                 label="Tägihaku"
-                onChange={e => handleSearchTermChange(e.currentTarget, e.target.value)}
+                onChange={(e) =>
+                    handleSearchTermChange(e.currentTarget, e.target.value)
+                }
                 onKeyDown={handleKeyPress}
                 value={searchTerm}
             />
-            <Popper open={Boolean(anchorElement)} anchorEl={anchorElement} placement="bottom-start" style={{ zIndex: 1000000 }}>
+            <Popper
+                open={Boolean(anchorElement)}
+                anchorEl={anchorElement}
+                placement="bottom-start"
+                style={{ zIndex: 1000000 }}
+            >
                 <Paper>{tagItems}</Paper>
             </Popper>
-            {selectedTags.map(tag => (
+            {selectedTags.map((tag) => (
                 <Tag key={tag} label={tag} handleDelete={removeTag} />
             ))}
         </>
