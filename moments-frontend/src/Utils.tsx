@@ -1,5 +1,3 @@
-import React from 'react'
-
 // Year: ^ 4 numbers $
 const yearRE = new RegExp(/^\d{4}$/)
 

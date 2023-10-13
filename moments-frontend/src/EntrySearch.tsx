@@ -1,5 +1,5 @@
 import { Paper, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ISearchData, defaultSearchData } from './Models'
 
 import TagAutoComplete from './TagAutoComplete'
@@ -55,7 +55,7 @@ const EntrySeach = (props: IEntrySearchProps) => {
     }
 
     const handleReverseChange = () => {
-        const newSearchData = { ...searchData, reverse: !searchData.reverse }
+        const newSearchData = { ...searchData, desc: !searchData.desc }
 
         setSearchData(newSearchData)
         searchDataUpdatedCallback(newSearchData)
@@ -112,7 +112,7 @@ const EntrySeach = (props: IEntrySearchProps) => {
             <label>
                 <input
                     type="checkbox"
-                    checked={searchData.reverse}
+                    checked={searchData.desc}
                     onChange={handleReverseChange}
                     style={{ marginLeft: 2, marginRight: 10, marginTop: 20 }}
                 />

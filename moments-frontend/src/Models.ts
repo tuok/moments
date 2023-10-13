@@ -19,14 +19,14 @@ export interface ISearchData {
     endDate?: Date
     begin?: number
     end?: number
-    reverse: boolean
+    desc: boolean
 }
 
 export const defaultSearchData: ISearchData = {
-    begin: 1,
+    begin: 0,
     end: 20,
     tags: [],
-    reverse: false,
+    desc: true,
 }
 
 export const emptyEntry: IEntry = {

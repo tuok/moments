@@ -6,26 +6,38 @@ class Api {
         'Content-Type': 'application/json',
     }
 
-    private static apiCall = (path: string, method: string, data: object, callback: Function) => {
-        fetch(`http://localhost:80${path}`, { headers: Api.headers, method, body: JSON.stringify(data) })
-            .then(resp => resp.json())
-            .then(json => callback(json))
+    private static apiCall = (
+        path: string,
+        method: string,
+        data: object | null,
+        callback: Function
+    ) => {
+        fetch(`http://localhost:3000${path}`, {
+            headers: Api.headers,
+            method,
+            body: data ? JSON.stringify(data) : null,
+        })
+            .then((resp) => resp.json())
+            .then((json) => callback(json))
     }
 
-    public static getEntries = (searchData: ISearchData, callback: Function) => {
-        Api.apiCall('/api/entries/search', 'POST', searchData, callback)
+    public static getEntries = (
+        searchData: ISearchData,
+        callback: Function
+    ) => {
+        Api.apiCall('/entries/search', 'POST', searchData, callback)
     }
 
-    public static getTags = (frequencies: boolean, callback: Function) => {
-        Api.apiCall('/api/tags', 'POST', { frequencies }, callback)
+    public static getTags = (callback: Function) => {
+        Api.apiCall('/tags', 'GET', null, callback)
     }
 
     public static saveEntry = (entry: IEntry, callback: Function) => {
-        Api.apiCall('/api/entries', 'POST', entry, callback)
+        Api.apiCall('/entries', 'POST', entry, callback)
     }
 
     public static removeEntry = (entry: IEntry, callback: Function) => {
-        Api.apiCall('/api/entries', 'DELETE', entry, callback)
+        Api.apiCall('/entries', 'DELETE', entry, callback)
     }
 }
 

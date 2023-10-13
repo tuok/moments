@@ -1,5 +1,3 @@
-import React from 'react'
-
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -21,7 +19,7 @@ const DeleteModal = (props: IDeleteModalProps) => {
     return (
         <Dialog
             open={true}
-            onClose={(e) => handleCancel()}
+            onClose={(_) => handleCancel()}
             /*disableBackdropClick={false}*/ disableEscapeKeyDown={false}
         >
             <DialogTitle>Vahvista poisto</DialogTitle>
@@ -33,9 +31,9 @@ const DeleteModal = (props: IDeleteModalProps) => {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={(e) => handleCancel()}>Peruuta</Button>
+                <Button onClick={(_) => handleCancel()}>Peruuta</Button>
                 <Button
-                    onClick={(e) =>
+                    onClick={(_) =>
                         Api.removeEntry(entry, () => {
                             console.info('Entry removed successfully!')
                             handleEntryModified([], entry.tags)

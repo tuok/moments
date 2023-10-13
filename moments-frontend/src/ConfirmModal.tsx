@@ -1,5 +1,3 @@
-import React from 'react'
-
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -28,7 +26,7 @@ const ConfirmModal = (props: IConfirmModalProps) => {
     return (
         <Dialog
             open={true}
-            onClose={(e) => cancelCallback()}
+            onClose={(_) => cancelCallback()}
             //disableBackdropClick={false}
             disableEscapeKeyDown={false}
         >

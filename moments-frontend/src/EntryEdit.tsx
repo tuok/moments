@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -60,7 +60,7 @@ const EntryEdit = (props: IEntryEditProps) => {
     return (
         <Dialog
             open={true}
-            onClose={(e) => handleClose()}
+            onClose={(_) => handleClose()}
             // disableBackdropClick={true}
             disableEscapeKeyDown={true}
         >
@@ -138,7 +138,7 @@ const EntryEdit = (props: IEntryEditProps) => {
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={(e) => {
+                    onClick={(_) => {
                         if (cancelClickCount === 2) handleClose()
                         else setCancelClickCount((prevCount) => prevCount + 1)
                     }}
@@ -147,7 +147,7 @@ const EntryEdit = (props: IEntryEditProps) => {
                 </Button>
 
                 <Button
-                    onClick={(e) =>
+                    onClick={(_) =>
                         Api.saveEntry(modifiedEntry, () => {
                             const removedTags = entry.tags.filter(
                                 (tag) => !modifiedEntry.tags.includes(tag)

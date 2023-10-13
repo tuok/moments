@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MenuItem, Paper, Popper, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import Tag from './Tag'
 
@@ -143,7 +143,7 @@ const TagAutoComplete = (props: ITagAutoCompleteProps) => {
         return (
             <MenuItem
                 key={tag}
-                onClick={(e) => tagSelected(tag)}
+                onClick={(_) => tagSelected(tag)}
                 onKeyDown={handleKeyPress}
                 selected={i === selectedIndex}
             >
