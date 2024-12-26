@@ -5,3 +5,5 @@ data
 yarn.*
 .idea
 data/
+__pycache__
+debug/

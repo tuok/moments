@@ -9,6 +9,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 y_re = re.compile(r"^\d{4}$")
 my_re = re.compile(r"^\d{1,2}\/\d{4}$")
@@ -17,7 +18,7 @@ dmyh_re = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:xx$")
 dmyhm_re = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:\d{1,2}$")
 
 
-def convert_to_serializable(obj):
+def convert_to_serializable(obj: Any) -> Any:
     if dataclasses.is_dataclass(obj):
         return {
             field.name: convert_to_serializable(getattr(obj, field.name))

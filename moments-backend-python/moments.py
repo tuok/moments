@@ -1,4 +1,6 @@
 import datetime
+from typing import cast
+
 from flask import Flask, request
 from flask_cors import CORS
 from database import Database, Entry
@@ -20,7 +22,7 @@ def entry_from_request() -> Entry:
 
 
 def serialize_entries(entries: list[Entry]) -> list[dict]:
-    return [entry.to_dict() for entry in entries]
+    return [cast(dict, entry.to_dict()) for entry in entries]
 
 
 @app.route("/")
@@ -50,7 +52,7 @@ def search_entries():
     start_date_str = data.get("startDate")
     end_date_str = data.get("endDate")
     search_tags = data.get("tags")
-    desc = data.get("desc")
+    reverse = data.get("reverse", True)
 
     if begin is None or end is None:
         begin = 0
@@ -72,7 +74,7 @@ def search_entries():
         results = filter(lambda entry: search_term in entry.text.lower(), results)
 
     def parse_str_timestamp(str_timestamp) -> datetime:
-        return datetime.strptime(str_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+        return datetime.datetime.strptime(str_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     if start_date_str:
         start_date = parse_str_timestamp(start_date_str)
@@ -82,7 +84,7 @@ def search_entries():
         end_date = parse_str_timestamp(end_date_str)
         results = filter(lambda entry: end_date >= entry.start_time, results)
 
-    results = sorted(results, key=lambda entry: entry.start_time, reverse=desc)
+    results = sorted(results, key=lambda entry: entry.start_time, reverse=reverse)
 
     if begin < 0:
         begin = 0
@@ -105,6 +107,7 @@ def remove_entry():
 @app.route("/init", methods=["GET"])
 def init_entries():
     db.populate_db()
+
 
 
 if __name__ == "__main__":

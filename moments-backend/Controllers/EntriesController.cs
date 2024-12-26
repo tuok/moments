@@ -28,7 +28,7 @@ namespace Moments.Controllers
 
             if (!begin.HasValue || !end.HasValue)
             {
-                begin = 1;
+                begin = 0;
                 end = 20;
             }
 
