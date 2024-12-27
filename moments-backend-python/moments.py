@@ -1,16 +1,26 @@
 import datetime
+import os
 from typing import cast
 
 from flask import Flask, request
 from flask_cors import CORS
 from database import Database, Entry
 
-DEBUG = True
+DEBUG = os.environ.get("DEBUG_MOMENTS", False) == "1"
+PORT = os.environ.get("MOMENTS_PORT", 3000)
+ENTRY_DIR = os.environ.get("ENTRY_DIR")
+
+if not ENTRY_DIR:
+    raise ValueError("ENTRY_DIR environment variable needs to be specified")
+
+print(f"{DEBUG=}")
+print(f"{PORT=}")
+print(f"{ENTRY_DIR=}")
+
 
 app = Flask(__name__, static_url_path="")
 CORS(app)
-
-db = Database("/Users/tuok/Downloads/home/tuok/moments/data", debug=DEBUG)
+db = Database(ENTRY_DIR, debug=DEBUG)
 db.populate_db()
 
 
@@ -107,7 +117,6 @@ def remove_entry():
 @app.route("/init", methods=["GET"])
 def init_entries():
     db.populate_db()
-
 
 
 if __name__ == "__main__":
