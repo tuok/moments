@@ -62,7 +62,7 @@ def search_entries():
     start_date_str = data.get("startDate")
     end_date_str = data.get("endDate")
     search_tags = data.get("tags")
-    reverse = data.get("reverse", True)
+    reverse = data.get("desc", True)
 
     if begin is None or end is None:
         begin = 0
