@@ -75,26 +75,26 @@ def search_entries():
 
     if search_tags:
         results = filter(
-            lambda entry: all(search_tag in entry.tags for search_tag in search_tags),
+            lambda e: all(search_tag in e.tags for search_tag in search_tags),
             results,
         )
 
     if search_term:
         search_term = search_term.lower()
-        results = filter(lambda entry: search_term in entry.text.lower(), results)
+        results = filter(lambda e: search_term in e.text.lower(), results)
 
     def parse_str_timestamp(str_timestamp) -> datetime:
         return datetime.datetime.strptime(str_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     if start_date_str:
         start_date = parse_str_timestamp(start_date_str)
-        results = filter(lambda entry: start_date <= entry.start_time, results)
+        results = filter(lambda e: start_date <= e.start_time, results)
 
     if end_date_str:
         end_date = parse_str_timestamp(end_date_str)
-        results = filter(lambda entry: end_date >= entry.start_time, results)
+        results = filter(lambda e: end_date >= e.start_time, results)
 
-    results = sorted(results, key=lambda entry: entry.start_time, reverse=reverse)
+    results = sorted(results, key=lambda e: e.start_time, reverse=reverse)
 
     if begin < 0:
         begin = 0
