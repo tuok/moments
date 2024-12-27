@@ -123,4 +123,4 @@ def init_entries():
 
 
 if __name__ == "__main__":
-    app.run(port=3000, debug=DEBUG, use_reloader=DEBUG)
+    app.run(port=PORT, debug=DEBUG, use_reloader=False)
