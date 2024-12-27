@@ -55,6 +55,9 @@ def get_entries():
 def search_entries():
     data = request.json
 
+    if DEBUG:
+        print(f"Search data: {data}")
+
     id_ = data.get("id")
     search_term = data.get("searchTerm")
     begin = data.get("begin")
