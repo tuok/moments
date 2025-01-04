@@ -15,7 +15,7 @@ export default defineConfig({
   plugins: [react()],
   define: {
     'process.env': {
-      BACKEND_PORT: process.env.BACKEND_PORT,
+      BACKEND: process.env.BACKEND,
       DEBUG: process.env.DEBUG_MOMENTS,
     },
   },

@@ -1,7 +1,6 @@
 import { IEntry, ISearchData } from './Models'
 
-const API_PORT = process.env.BACKEND_PORT;
-const API_URL = `http://localhost:${API_PORT}`;
+const API_URL = process.env.BACKEND;
 
 class Api {
     private static headers = {
