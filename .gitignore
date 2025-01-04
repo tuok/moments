@@ -7,3 +7,6 @@ yarn.*
 data/
 __pycache__
 debug/
+**/node_modules/
+**/static/
+**/venv/
