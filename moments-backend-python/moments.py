@@ -5,18 +5,15 @@ from typing import cast
 from flask import Flask, request
 from flask_cors import CORS
 from database import Database, Entry
+from dotenv import load_dotenv
 
+load_dotenv("../.env")
 DEBUG = os.environ.get("DEBUG_MOMENTS", False) == "1"
-PORT = os.environ.get("MOMENTS_PORT", 3000)
+PORT = os.environ.get("BACKEND_PORT", 8000)
 ENTRY_DIR = os.environ.get("ENTRY_DIR")
 
 if not ENTRY_DIR:
     raise ValueError("ENTRY_DIR environment variable needs to be specified")
-
-print(f"{DEBUG=}")
-print(f"{PORT=}")
-print(f"{ENTRY_DIR=}")
-
 
 app = Flask(__name__, static_url_path="")
 CORS(app)

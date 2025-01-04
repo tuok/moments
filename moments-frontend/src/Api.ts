@@ -1,5 +1,8 @@
 import { IEntry, ISearchData } from './Models'
 
+const API_PORT = process.env.BACKEND_PORT;
+const API_URL = `http://localhost:${API_PORT}`;
+
 class Api {
     private static headers = {
         Accept: 'application/json',
@@ -12,7 +15,7 @@ class Api {
         data: object | null,
         callback: Function
     ) => {
-        fetch(`http://localhost:3000${path}`, {
+        fetch(`${API_URL}${path}`, {
             headers: Api.headers,
             method,
             body: data ? JSON.stringify(data) : null,
