@@ -1,7 +1,6 @@
 export interface IEntry {
     id: number
     text: string
-    author?: string
     title?: string
     tags: string[]
     links_to: number[]
@@ -32,7 +31,6 @@ export const defaultSearchData: ISearchData = {
 export const emptyEntry: IEntry = {
     id: -1,
     text: '',
-    author: 'tuomas',
     title: '',
     tags: [],
     links_to: [],

@@ -2,7 +2,7 @@ import datetime
 import os
 from typing import cast
 
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, jsonify, Response
 from flask_cors import CORS
 from database import Database, Entry
 from dotenv import load_dotenv
@@ -22,10 +22,7 @@ db.populate_db()
 
 
 def entry_from_request() -> Entry:
-    data = request.json
-    entry = Entry(**data)
-
-    return entry
+    return Entry.from_json(request.json)
 
 
 def serialize_entries(entries: list[Entry]) -> list[dict]:
@@ -107,19 +104,32 @@ def search_entries():
     return serialize_entries(results[begin:end])
 
 
+def ok_200() -> tuple[Response, int]:
+    return jsonify({}), 200
+
+
 @app.route("/entries", methods=["POST"])
-def add_entry():
-    db.add_entry(entry_from_request())
+def add_modify_entry():
+    entry = entry_from_request()
+
+    if entry.id == -1:
+        db.add_entry(entry)
+    else:
+        db.modify_entry(entry)
+
+    return ok_200()
 
 
 @app.route("/entries", methods=["DELETE"])
 def remove_entry():
     db.remove_entry(entry_from_request())
+    return ok_200()
 
 
 @app.route("/init", methods=["GET"])
 def init_entries():
     db.populate_db()
+    return ok_200()
 
 
 if __name__ == "__main__":

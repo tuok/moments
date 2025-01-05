@@ -1,15 +1,18 @@
-import dataclasses
 import functools
-import json
+from typing import Self
+from xml.etree.ElementTree import indent
+
+import ujson as json
 import pickle
-
-
 import re
-import time
-from dataclasses import dataclass
+
+from collections import defaultdict
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+
+from mashumaro.mixins.json import DataClassJSONMixin, EncodedData
+from mashumaro.types import SerializationStrategy
 
 y_re = re.compile(r"^\d{4}$")
 my_re = re.compile(r"^\d{1,2}\/\d{4}$")
@@ -18,40 +21,66 @@ dmyh_re = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:xx$")
 dmyhm_re = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{4} \d{1,2}:\d{1,2}$")
 
 
-def convert_to_serializable(obj: Any) -> Any:
-    if dataclasses.is_dataclass(obj):
-        return {
-            field.name: convert_to_serializable(getattr(obj, field.name))
-            for field in dataclasses.fields(obj)
-        }
-    elif isinstance(obj, datetime):
-        return obj.isoformat()
-    elif isinstance(obj, Path):
-        return str(obj)
-    elif isinstance(obj, set):
-        return list(obj)
-    else:
-        return obj
+class DateTimeStrategy(SerializationStrategy):
+    def serialize(self, value: datetime) -> str:
+        return value.isoformat() if value else None
+
+    def deserialize(self, value: str) -> datetime:
+        return datetime(*map(int, re.findall("\d+", value))) if value else None
+
+
+class PathStrategy(SerializationStrategy):
+    def serialize(self, value: Path) -> str:
+        return str(value) if value else None
+
+    def deserialize(self, value: str) -> Path:
+        return Path(value) if value else None
 
 
 @functools.total_ordering
 @dataclass
-class Entry:
+class Entry(DataClassJSONMixin):
     id: int
-    author: str | None
-    tags: set[str]
-    links_to: set[int]
     start_readable_timestamp: str
-    end_readable_timestamp: str | None
-    title: str | None
     text: str
-    private: bool  # Can this be removed?
-    start_time: datetime
-    end_time: datetime | None
-    path: Path
+    start_time: datetime = field(
+        metadata={"serialization_strategy": DateTimeStrategy()}
+    )
+    tags: set[str] = field(default_factory=set)
+    links_to: set[int] = field(default_factory=set)
+    end_readable_timestamp: str | None = None
+    title: str | None = None
+    end_time: datetime | None = field(
+        default=None, metadata={"serialization_strategy": DateTimeStrategy()}
+    )
+    path: Path | None = field(
+        default=None, metadata={"serialization_strategy": PathStrategy()}
+    )
 
-    def __lt__(self, other) -> bool:
-        return self.start_time < other.start_time
+    def validate(self) -> None:
+        if not self.text:
+            raise ValueError("Text cannot be empty")
+        if not self.start_readable_timestamp:
+            raise ValueError("Start timestamp is required")
+        if self.end_time and self.start_time > self.end_time:
+            raise ValueError("End time must be after start time")
+
+    @classmethod
+    def from_json(cls, data: dict, **kwargs) -> "Entry":
+        if isinstance(data, str):
+            data = json.loads(data)
+
+        if path := kwargs.get("path"):
+            data["path"] = path
+
+        entry = cls.from_dict(data)
+        entry.validate()
+
+        return entry
+
+    def to_json(self, **kwargs) -> str:
+        indentation = kwargs.get("indent")
+        return json.dumps(self.to_dict(), indent=indentation)
 
     def generate_timestamp_path(self) -> Path:
         year = 9999
@@ -93,40 +122,8 @@ class Entry:
 
         return entry_path
 
-    @staticmethod
-    def parse_datetime(datetime_str: str | None) -> datetime | None:
-        if datetime_str is None:
-            return None
-
-        return datetime(*map(int, re.findall("\d+", datetime_str)))
-
-    @classmethod
-    def from_json(cls, json_data: dict, path: Path) -> "Entry":
-        mandatory_fields = ["id", "start_readable_timestamp", "text", "start_time"]
-
-        for field in mandatory_fields:
-            if field not in json_data:
-                raise ValueError(f"Field '{field}' is mandatory.")
-
-        json_data["path"] = path
-        json_data["id"] = int(json_data["id"])
-        json_data["start_time"] = cls.parse_datetime(json_data["start_time"])
-        json_data["tags"] = (
-            set(json_data["tags"]) if "tags" in json_data and json_data["tags"] else {}
-        )
-        json_data["links_to"] = (
-            set(json_data["links_to"])
-            if "links_to" in json_data and json_data["links_to"]
-            else {}
-        )
-        json_data["end_time"] = cls.parse_datetime(json_data["end_time"])
-
-        entry = cls(**json_data)
-
-        return entry
-
-    def to_dict(self) -> str:
-        return convert_to_serializable(self)
+    def __lt__(self, other) -> bool:
+        return self.start_time < other.start_time
 
 
 class Database:
@@ -135,7 +132,7 @@ class Database:
 
     def __init__(self, path: str, debug: bool = False) -> None:
         self.debug = debug
-        self.all_tags = {}
+        self.all_tags = defaultdict(int)
         self.all_entries = {}
 
         if debug:
@@ -176,11 +173,6 @@ class Database:
 
         print("Loaded debug DB from pickle files.")
 
-    @staticmethod
-    def validate_entry(entry: Entry) -> None:
-        if entry.end_time and entry.start_time > entry.end_time:
-            raise ValueError("Entry start time must come before end time.")
-
     @property
     def entries(self) -> list[Entry]:
         return list(self.all_entries.values())
@@ -195,8 +187,6 @@ class Database:
             self.add_entry(entry)
 
     def add_entry(self, entry: Entry) -> None:
-        self.validate_entry(entry)
-
         while Database.max_id in self.all_entries:
             Database.max_id += 1
 
@@ -213,8 +203,6 @@ class Database:
         if entry.id not in self.all_entries:
             raise RuntimeError(f"Could not found entry with id {entry.id}")
 
-        self.validate_entry(entry)
-
         old_entry = self.all_entries[entry.id]
 
         # Update tags
@@ -226,20 +214,17 @@ class Database:
             if new_tag not in old_entry.tags:
                 self.add_tag(new_tag)
 
-        entry.path = old_entry.path
-        entry.private = old_entry.private
-
         self.all_entries[entry.id] = entry
         self.save_entry(entry)
 
     def save_entry(self, entry: Entry) -> None:
-        if entry.path.exists():
+        if entry.path and entry.path.exists():
             entry.path.unlink(missing_ok=True)
 
         entry.path = self.root_dir / entry.generate_timestamp_path()
-        entry.path.mkdir(exist_ok=True)
+        entry.path.parent.mkdir(parents=True, exist_ok=True)
 
-        file_content = json.dumps(entry, indent=4)
+        file_content = entry.to_json(indent=4)
         entry.path.write_text(file_content, encoding="utf-8")
         print(f"Entry #{entry.id} was saved successfully in {entry.path}")
 
@@ -297,17 +282,10 @@ class Database:
         return entry_files, ignored_files
 
     def add_tag(self, tag: str) -> None:
-        if tag in self.all_tags:
-            self.all_tags[tag] += 1
-        else:
-            self.all_tags[tag] = 1
+        self.all_tags[tag] += 1
 
     def remove_tag(self, tag: str) -> None:
-        if tag in self.all_tags:
-            self.all_tags[tag] -= 1
-
-            if self.all_tags[tag] <= 0:
-                del self.all_tags[tag]
+        self.all_tags[tag] -= 1
 
     def parse_entries(self, entry_files: list[Path]):
         loaded_count = 0
@@ -316,12 +294,12 @@ class Database:
             json_data = json.loads(entry_file.read_text(encoding="utf-8"))
 
             try:
-                entry = Entry.from_json(json_data, entry_file)
+                entry = Entry.from_json(json_data, path=entry_file)
             except Exception as ex:
                 print(f"Ignoring '{entry_file}' because of error: {ex}")
                 continue
 
-            self.max_id = max(entry.id, self.max_id)
+            Database.max_id = max(entry.id, self.max_id)
 
             for tag in entry.tags:
                 self.add_tag(tag)

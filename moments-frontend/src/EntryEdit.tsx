@@ -156,7 +156,7 @@ const EntryEdit = (props: IEntryEditProps) => {
                                 (tag) => !entry.tags.includes(tag)
                             )
 
-                            console.info('Entry modified successfully!')
+                            console.info('Entry saved successfully!')
 
                             handleEntryModified(addedTags, removedTags)
                             handleClose()
