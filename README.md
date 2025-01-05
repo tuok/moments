@@ -6,9 +6,11 @@ Entries are saved as json text files in hierarchical directory structure. This w
 ## Run
 
 - Copy entries to an accessible place, update `.env` if place differs from `./data`
+  - Set also Backend url to desired value
 - Create & activate virtual environment for the backend with `source ./create_venv.sh`, if needed
 - Build and "deploy" frontend: `cd moments-frontend && ./dev-deploy.sh`
 - Start backend with: `cd moments-backend-python && python moments.py`
+- Start dev frontend with `npm run dev` (starts by default on port 5173)
 
 ## GitHub auth
 
