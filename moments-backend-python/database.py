@@ -106,7 +106,7 @@ class Entry(DataClassJSONMixin):
             dmy_raw, hm_raw = self.start_readable_timestamp.split(" ")
             hour_raw, min_raw = hm_raw.split(":")
 
-            day, month, year = [int(x) for x in hm_raw.split(".")]
+            day, month, year = [int(x) for x in dmy_raw.split(".")]
 
             hour = int(hour_raw)
 
