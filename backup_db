@@ -1,7 +1,18 @@
-TIME_STR=`date '+%Y_%m_%d__%H_%M_%S'`
-DB_FILE=moments_data_$TIME_STR.tar.gz
-tar -zcvf $DB_FILE data/
-scp $DB_FILE <user@host>:<dir>
-rm $DB_FILE
-ssh <user@host> 'find <dir>/moments_data_*.tar.gz -mtime +365 -type f | sort -nr | tail -n +366 | xargs -r rm'
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")" || exit 1
+
+DEST="$1"
+[ -n "${DEST:-}" ] && [ -d "$DEST" ] || { echo "usage: $0 <dest_dir>" >&2; exit 1; }
+
+TS=$(date '+%Y_%m_%d__%H_%M_%S')
+F="moments_data_${TS}.tar.gz"
+
+tar -zcf "$F" moments-backend-python/data
+
+LAST=$(ls -t "$DEST"/moments_data_*.tar.gz 2>/dev/null | head -n 1 || true)
+[ -z "$LAST" ] || [ "$(sha256sum "$F" | awk '{print $1}')" != "$(sha256sum "$LAST" | awk '{print $1}')" ] || { rm -f "$F"; exit 0; }
+
+cp "$F" "$DEST"/
+rm -f "$F"
 
